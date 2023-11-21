@@ -7,7 +7,7 @@ using DG.Tweening;
 /// <summary>
 /// 카메라 시퀀스 처리를 위한 스크립트이다.
 /// </summary>
-public class JCamera : MonoBehaviour
+public class JStartCameraSequence : MonoBehaviour
 {
     /// <summary> [카메라 오브젝트] 메인 카메라 </summary>
     [Header("[카메라 오브젝트] 메인 카메라")]
