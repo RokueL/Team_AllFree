@@ -174,24 +174,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2863203cf2ca8a94583e0bff2cbe2d74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 0
-  enemyType: 0
-  type: 0
-  maxdistance: 0
-  mindistance: 0
-  speed: 0
-  curAttackDelay: 0
-  maxAttackDelay: 0
-  curAggroTime: 0
-  maxAggroTime: 0
   dmg: 20
-  nextMove: 0
-  player: {fileID: 0}
-  objectManager: {fileID: 0}
-  gameManager: {fileID: 0}
-  rigid: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  anim: {fileID: 0}
-  forward: {x: 0, y: 0}
-  attackType: Shot
-  enemyScript: {fileID: 0}
+  type: Shot

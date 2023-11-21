@@ -3,9 +3,6 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-<<<<<<< Updated upstream
-  tags: []
-=======
   tags:
   - EnemyAttack
   - Border
@@ -20,26 +17,24 @@ TagManager:
   - ItemBox
   - Debris
   - Rever
-  - Follow
->>>>>>> Stashed changes
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Enemy
+  - Boss
+  - Border
+  - BossAttackObject
+  - Item
+  - PlayerAttack
+  - ItemBox
+  - Debris
+  - Rever
+  - PostProcess
   - 
   - 
   - 
