@@ -3,7 +3,25 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
+<<<<<<< Updated upstream
   tags: []
+=======
+  tags:
+  - EnemyAttack
+  - Border
+  - Boss
+  - Ground
+  - Item
+  - Enemy
+  - BossAttack
+  - TriggerMap
+  - BossTrigger
+  - PlayerAttack
+  - ItemBox
+  - Debris
+  - Rever
+  - Follow
+>>>>>>> Stashed changes
   layers:
   - Default
   - TransparentFX
