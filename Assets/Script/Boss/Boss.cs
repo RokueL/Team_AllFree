@@ -37,7 +37,7 @@ public class Boss : Enemy
     bool isScalesFire;
 
     public bool isAppear;
-    bool rageState;
+    public bool rageState;
 
     public CircleCollider2D Rolling;
 
@@ -51,12 +51,16 @@ public class Boss : Enemy
         rageRollingRatio = 7;
         doReadyRoll = 5;
 
+        rollingSpeed = 25;
+
+
         spriteRenderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
     }
     void OnEnable()
     {
+        isAppear = true;
         StartCoroutine(LevelCheck());
     }
     void FixedUpdate()
@@ -84,7 +88,6 @@ public class Boss : Enemy
                     curShotDelay += Time.deltaTime;
                     ScalesAttack();
                 }
-
                 if (rageState)
                     RageSprite();
 
@@ -114,7 +117,7 @@ public class Boss : Enemy
         switch (bossType)
         {
             case Boss_Type.BossA:
-                isAppear = true;
+
                 break;
             case Boss_Type.BossB:
 
@@ -129,7 +132,7 @@ public class Boss : Enemy
                 health = 100;
                 maxHealth = 100;
                 dmg = 15;
-                rageGage = -1;
+                rageGage = 30;
                 scaleCount = 5;
                 break;
 
@@ -281,6 +284,7 @@ public class Boss : Enemy
         BossAttackObject scratchLogic = scratch.GetComponent<BossAttackObject>();
         scratchLogic.enemyScript = enemyScript;
         scratchLogic.dmg = dmg;
+        scratchLogic.Att_type = BossAttackObject.Attack_Type.Melee;
 
         scratch.transform.position = transform.position + Vector3.right * frontPos*2+Vector3.down*0.2f;
 
@@ -294,12 +298,12 @@ public class Boss : Enemy
         isAttack = true;
         yield return new WaitForSeconds(1f);
 
-        rigid.AddForce(Vector2.up * 15, ForceMode2D.Impulse);
-        yield return new WaitForSeconds(0.3f);
+        anim.SetTrigger("doJump");
+        rigid.AddForce(Vector2.up * 30, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(1f);
 
-        rigid.AddForce(Vector2.down * 20, ForceMode2D.Impulse);
-        yield return new WaitForSeconds(0.5f);
 
+        anim.SetTrigger("doLand");
         gameManager.DropDebris();
 
         StartCoroutine(Think());
@@ -321,6 +325,7 @@ public class Boss : Enemy
                 BossAttackObject scaleLogic = scales.GetComponent<BossAttackObject>();
                 scaleLogic.enemyScript = enemyScript;
                 scaleLogic.dmg = dmg * 0.7f;
+                scaleLogic.Att_type = BossAttackObject.Attack_Type.Range;
 
                 scales.transform.position = transform.position+Vector3.down*1f;
                 Rigidbody2D S_rigid = scales.GetComponent<Rigidbody2D>();
@@ -431,7 +436,6 @@ public class Boss : Enemy
 
                     Rigidbody2D rigid = coreA.GetComponent<Rigidbody2D>();
                     rigid.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
-                    anim.SetTrigger("doDie");
                     yield return new WaitForSeconds(2.2f);
 
                     gameObject.SetActive(false);
@@ -448,81 +452,6 @@ public class Boss : Enemy
     }
 
     //Sprite
-    void DamageLogic(float dmg)
-    {
-        Player playerLogic = player.GetComponent<Player>();
-        switch (type)
-        {
-            case Def_Type.Normal:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health -= dmg;
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 1.5f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 1.5f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 1.5f);
-                        break;
-                }
-                break;
-            case Def_Type.Nimble:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 1.3f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 0.8f);
-                        break;
-                }
-                break;
-            case Def_Type.Resist:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 1.5f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 0.5f);
-                        break;
-                }
-                break;
-            case Def_Type.Solid:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 0.8f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 0.8f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 1.5f);
-                        break;
-                }
-                break;
-        }
-    }
     void RageSprite()
     {
         spriteRenderer.color = new Color(1, 0.5f, 0.5f, 1);

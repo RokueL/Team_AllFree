@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class BossAttackObject : Enemy
 {
-    public string attackType;
+    public enum Attack_Type {Melee,Range };
+    public Attack_Type Att_type;
     public Enemy enemyScript;
 
     void Awake()
@@ -29,13 +30,13 @@ public class BossAttackObject : Enemy
         switch (level)
         {
             case Level.Easy:
-                switch (attackType)
+                switch (Att_type)
                 {
-                    case "Shot":
+                    case Attack_Type.Melee:
                         yield return new WaitForSeconds(1f);
                         Off();
                         break;
-                    case "Long":
+                    case Attack_Type.Range:
                         yield return new WaitForSeconds(4f);
                         Off();
                         break;
@@ -47,13 +48,13 @@ public class BossAttackObject : Enemy
                 break;
 
             case Level.Hard:
-                switch (attackType)
+                switch (Att_type)
                 {
-                    case "Shot":
+                    case Attack_Type.Melee:
                         yield return new WaitForSeconds(1f);
                         Off();
                         break;
-                    case "Long":
+                    case Attack_Type.Range:
                         yield return new WaitForSeconds(4f);
                         Off();
                         break;

@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour
     public enum Level { Easy, Normal, Hard }
     public Level level;
 
-    public enum Type { Mouse ,Snake };
+    public enum Type { Mouse ,Snake,Slime, Flower };
     public Type enemyType;
 
     public enum Def_Type { Normal, Resist, Nimble, Solid }
@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
     public float curAggroTime;
     public float maxAggroTime;
     public  float dmg;
+    public float nextMove;
 
     protected float health;
     protected float maxHealth;
@@ -54,12 +55,14 @@ public class Enemy : MonoBehaviour
         if (player.transform.position.x - Pos.x < -distance)
         {
             forward = new Vector2(-speed, rigid.velocity.y).normalized;
+            nextMove = -1;
             Watch(Pos, player.transform.position, sprite);
             isFollow = true;
         }
         else if (player.transform.position.x - Pos.x > distance)
         {
             forward = new Vector2(speed, rigid.velocity.y).normalized;
+            nextMove = 1;
             Watch(Pos, player.transform.position, sprite);
             isFollow = true;
         }
@@ -79,5 +82,80 @@ public class Enemy : MonoBehaviour
         { forward = new Vector2(-speed, rigid.velocity.y).normalized; }
         else if (spriteRenderer.flipX == true)
         { forward = new Vector2(speed, rigid.velocity.y).normalized; }
+    }
+    public void DamageLogic(float dmg)
+    {
+        Player playerLogic = player.GetComponent<Player>();
+        switch (type)
+        {
+            case Def_Type.Normal:
+                switch (playerLogic.type)
+                {
+                    case Player.Att_Type.Normal:
+                        health -= dmg;
+                        break;
+                    case Player.Att_Type.Power:
+                        health = health - (dmg * 1.5f);
+                        break;
+                    case Player.Att_Type.Sharp:
+                        health = health - (dmg * 1.5f);
+                        break;
+                    case Player.Att_Type.Mystic:
+                        health = health - (dmg * 1.5f);
+                        break;
+                }
+                break;
+            case Def_Type.Nimble:
+                switch (playerLogic.type)
+                {
+                    case Player.Att_Type.Normal:
+                        health = health - (dmg * 0.5f);
+                        break;
+                    case Player.Att_Type.Power:
+                        health = health - (dmg * 0.5f);
+                        break;
+                    case Player.Att_Type.Sharp:
+                        health = health - (dmg * 1.3f);
+                        break;
+                    case Player.Att_Type.Mystic:
+                        health = health - (dmg * 0.8f);
+                        break;
+                }
+                break;
+            case Def_Type.Resist:
+                switch (playerLogic.type)
+                {
+                    case Player.Att_Type.Normal:
+                        health = health - (dmg * 0.5f);
+                        break;
+                    case Player.Att_Type.Power:
+                        health = health - (dmg * 1.5f);
+                        break;
+                    case Player.Att_Type.Sharp:
+                        health = health - (dmg * 0.5f);
+                        break;
+                    case Player.Att_Type.Mystic:
+                        health = health - (dmg * 0.5f);
+                        break;
+                }
+                break;
+            case Def_Type.Solid:
+                switch (playerLogic.type)
+                {
+                    case Player.Att_Type.Normal:
+                        health = health - (dmg * 0.5f);
+                        break;
+                    case Player.Att_Type.Power:
+                        health = health - (dmg * 0.8f);
+                        break;
+                    case Player.Att_Type.Sharp:
+                        health = health - (dmg * 0.8f);
+                        break;
+                    case Player.Att_Type.Mystic:
+                        health = health - (dmg * 1.5f);
+                        break;
+                }
+                break;
+        }
     }
 }

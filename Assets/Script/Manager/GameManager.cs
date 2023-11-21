@@ -7,16 +7,15 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     //Camera
-    public float delay;
-    public float Move_smoothTime;
-    public float Start_smoothTime;
+    float delay;
+    float Move_smoothTime;
     float viewHeight_Y;
     float viewHeight_X;
     float harf_ViewHeaight_Y;
     float harf_ViewHeaight_X;
 
+    [Header("상하좌우 카메라 타겟")]
     public Transform[] target;
-    public Transform StartCameraPos;
 
     Vector3 velocity = Vector3.zero;
 
@@ -25,7 +24,6 @@ public class GameManager : MonoBehaviour
     bool isRightMap;
     bool isLeftMap;
 
-    bool isCameraMoving;
     //ShakeCamera
     Vector3 myVec;
 
@@ -33,54 +31,48 @@ public class GameManager : MonoBehaviour
 
     float shakeTime = 0.7f;
 
-    //Spawn
+    [Header("[스폰 지점]{원거리}{근거리}{아이템박스}{낙하물}{보스}")]
     public Transform[] Range_SpawnPoint;
     public Transform[] Shot_SpawnPoint;
     public Transform[] Item_SpawnPoint;
     public Transform[] Drop_SpawnPoint;
-
-    //Start&Trigger
-    public BoxCollider2D[] boss_Border;
-
     public Transform bossSpawnPoint;
 
-    public GameObject reTry;
-
-    bool isStart;
-
-    //UI
-    public GameObject gameStart;
-    public GameObject[] level;
-
+    //Start&Trigger
+    [Header("보스맵 투명벽")]
+    public BoxCollider2D[] boss_Border;
 
     //Object&Script
+    [Header("플레이어")]
     public GameObject player;
+    [Header("오브젝트 매니저")]
     public ObjectManager objectManager;
+    [Header("몬스터스크립트")]
     public Enemy enemyScript;
-    public GameLevelManager gameLevelManager;
 
     void Awake()
     {
+        //카메라 사이즈
         harf_ViewHeaight_Y = Camera.main.orthographicSize;
         harf_ViewHeaight_X = Camera.main.orthographicSize * 16 / 9;
         viewHeight_Y = harf_ViewHeaight_Y * 2;
         viewHeight_X = harf_ViewHeaight_X * 2;
 
-        gameLevelManager.enemy = enemyScript;
+        delay = 0.01f;  //거리가 0.01까지 타겟지점으로 카메라 이동
+        Move_smoothTime = 0.2f; //카메라 속도
+
+        SpawnEnemy();//레벨 지정 전까지 임시 스폰
     }
     void Update()
     {
-        StartMove();
         TouchCamera();
         NextMap();
 
         BossRoom();
     }
-    //Camera
+    //카메라 이동
     void TouchCamera()
     {
-        if (isCameraMoving)
-            return;
         if (player.transform.position.y + harf_ViewHeaight_Y > target[0].position.y)
         {
             isTopMap = true;
@@ -100,11 +92,9 @@ public class GameManager : MonoBehaviour
             PlayerStop();
             isLeftMap = true;
         }
-    }
+    }       //카메라 트리거
     void NextMap()
     {
-        if (isCameraMoving)
-            return;
         if (isTopMap)
         {
             Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position,
@@ -112,7 +102,6 @@ public class GameManager : MonoBehaviour
 
             if (Vector3.Distance(target[0].position, Camera.main.transform.position) < delay)
             {
-                Debug.Log("Camera");
                 isTopMap = false;
                 for (int index = 0; index < 4; index++)
                 {
@@ -127,7 +116,6 @@ public class GameManager : MonoBehaviour
 
             if (Vector3.Distance(target[1].position, Camera.main.transform.position) < delay)
             {
-                Debug.Log("Camera");
                 isBottomMap = false;
                 for (int index = 0; index < 4; index++)
                 {
@@ -142,7 +130,6 @@ public class GameManager : MonoBehaviour
 
             if (Vector3.Distance(target[2].position, Camera.main.transform.position) <delay)
             {
-                Debug.Log("Camera");
                 isRightMap = false;
                 for(int index=0;index<4;index++)
                 {
@@ -157,7 +144,6 @@ public class GameManager : MonoBehaviour
 
             if (Vector3.Distance(target[3].position, Camera.main.transform.position) < delay)
             {
-                Debug.Log("Camera");
                 isLeftMap = false;
                 for (int index = 0; index < 4; index++)
                 {
@@ -165,29 +151,14 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-    }
-    void StartMove()
-    {
-        Player playerLogic = player.GetComponent<Player>();
-
-        if (isStart)
-        {
-            Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position,
-                  StartCameraPos.position, ref velocity, Start_smoothTime);
-            isCameraMoving = true;
-        }
-        if (Vector3.Distance(StartCameraPos.position, Camera.main.transform.position) < delay)
-        {
-            isStart = false;
-            isCameraMoving = false;
-            playerLogic.isStart = true;
-        }
-    }
+    }           //다음맵으로 카메라 이동
     public void PlayerStop()
     {
         Rigidbody2D p_Rigid = player.GetComponent<Rigidbody2D>();
         p_Rigid.velocity = Vector2.zero;
-    }
+    } //카메라 이동시 정지  ※상단이동시에는 정지 없음
+
+    //카메라 흔들기
     public void ShakeCam()
     {
         StartCoroutine(CameraShake(shakeAmout, shakeTime));
@@ -209,53 +180,37 @@ public class GameManager : MonoBehaviour
     }
 
     //UI
-    public void GameStart()
-    {
-        gameStart.SetActive(false);
-
-        level[0].SetActive(true);
-        level[1].SetActive(true);
-        level[2].SetActive(true);
-    }
     public void Easy()
     {
-        gameLevelManager.Easy();
-        SelectLevel();
+        enemyScript.level = Enemy.Level.Easy;
     }
     public void Normal()
     {
-        gameLevelManager.Normal();
-        SelectLevel();
+        enemyScript.level = Enemy.Level.Easy; //Normal선택시 Easy난이도 설정
     }
     public void Hard()
     {
-        gameLevelManager.Hard();
-        SelectLevel();
+        enemyScript.level = Enemy.Level.Hard;
     }
-    void SelectLevel()
+    void SpawnEnemy()           
     {
-        level[0].SetActive(false);
-        level[1].SetActive(false);
-        level[2].SetActive(false);
-        isStart = true;
-
         CreateMonsterA();
         CreateMonsterB();
         CreateItemBox();
         CreateBoss();
     }
 
-    public void GameOver()
-    {
-        reTry.SetActive(true);
-    }
     public void GameReStart()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void GameQuit()
+    {
+        Application.Quit();
     }
     
-    //Create
-    public void CreateBoss()
+    //몬스터 및 아이템박스 보스 스폰
+    void CreateBoss()
     {
         if (bossSpawnPoint == null)
             return;
@@ -269,14 +224,14 @@ public class GameManager : MonoBehaviour
         bossLogic.gameManager = this;
 
     }
-    public void CreateMonsterA()
+    void CreateMonsterA()
     {
         for (int index = 0; index < Shot_SpawnPoint.Length; index++)
         { GameObject mouse = objectManager.MakeObj("mouse");
             mouse.transform.position = Shot_SpawnPoint[index].position;
 
 
-            ShotRangeEnemy mouseLogic = mouse.GetComponent<ShotRangeEnemy>();
+            MeleeEnemy mouseLogic = mouse.GetComponent<MeleeEnemy>();
 
             mouseLogic.point = Shot_SpawnPoint[index];
             mouseLogic.player = player;
@@ -285,7 +240,7 @@ public class GameManager : MonoBehaviour
             mouseLogic.gameManager = this;
         }
     }
-    public void CreateMonsterB()
+    void CreateMonsterB()
     {
         for (int index = 0; index < Range_SpawnPoint.Length; index++)
         {
@@ -299,7 +254,7 @@ public class GameManager : MonoBehaviour
             snakeLogic.gameManager = this;
         }
     }
-    public void CreateItemBox()
+    void CreateItemBox()
     {
         for (int index = 0; index < Item_SpawnPoint.Length; index++)
         {
@@ -315,7 +270,8 @@ public class GameManager : MonoBehaviour
 
         }
     }
-
+    
+    //보스전 낙하물 및 몬스터 스폰
     public void DropDebris()
     {
         int ranCount= Random.Range(3, 6);
@@ -351,13 +307,26 @@ public class GameManager : MonoBehaviour
             GameObject mouse = objectManager.MakeObj("mouse");
 
             mouse.transform.position = Drop_SpawnPoint[ranPoint].position;
-            ShotRangeEnemy mouseLogic = mouse.GetComponent<ShotRangeEnemy>();
+            MeleeEnemy mouseLogic = mouse.GetComponent<MeleeEnemy>();
 
             mouseLogic.player = player;
             mouseLogic.objectManager = objectManager;
             mouseLogic.enemyScript = enemyScript;
             mouseLogic.gameManager = this;
         }
+    }
+
+    //소환수 스폰
+    public void FollowerSpawn()
+    {
+        Player playerLogic = player.GetComponent<Player>();
+        GameObject followCat = objectManager.MakeObj("followCat");
+        followCat.transform.position = playerLogic.transform.position+Vector3.up*2;
+
+        FollowCat followCatLogic = followCat.GetComponent<FollowCat>();
+        followCatLogic.player = player;
+        followCatLogic.parent = player.transform;
+        followCatLogic.attack = followCat.GetComponentInChildren<BoxCollider2D>();
     }
 
     //Trigger
@@ -373,6 +342,7 @@ public class GameManager : MonoBehaviour
 
         }
     }
+    //몬스터 다 잡을시 클리어 조건 발생(미구현)
     public void MonsterKillCheck()
     {
         Player playerLogic = player.GetComponent<Player>();

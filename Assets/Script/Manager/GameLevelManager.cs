@@ -5,12 +5,6 @@ using UnityEngine;
 public class GameLevelManager : MonoBehaviour
 {
     public Enemy enemy;
-    public GameObject meleeEnemy;
-    public GameObject RangeEnemy;
-    public GameObject Boss;
-    public GameObject BossAttck;
-    public GameObject enemyAttack;
-
 
     public void Easy()
     {

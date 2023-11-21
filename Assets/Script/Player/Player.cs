@@ -4,28 +4,42 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    //소환수
+    public int followCount;
+    int maxFollowCount;
+    int hpDecrease;
+
+    //공격 타입
     public enum Att_Type { Normal,Power,Sharp,Mystic}
     public Att_Type type;
 
-    public float life;
+    //특수 코어
+    public enum Skill_Core {Roll, Summon,DropAttack,Crouch }
+    public Skill_Core skill_Type;
+
+    //플레이어 스테이터스
+    public float curLife;
+    public float maxLife;
     public float dmg;
-    public float speed;
     public float jumpPower;
+    public float speed;
+    float roll_Speed;
 
     public float coin;
-    public float curAttackDelay;
-    public float maxAttackDelay;
 
-    public bool rightCheck;
-    public bool clearMap;
-    public bool isStart;
+    //공격 딜레이
+    float curAttackDelay;
+    float maxAttackDelay;
 
-    //core
+    public bool clearMap;       //클리어 시 트리거 작동(미구현)
+    public bool isStart;        //시작 전 컨트롤제어
+
+    //스테이터스 코어(미구현)
     public bool damageCore;
     public bool speedCore;
     public bool healthCore;
 
-    //Attack_Type
+    //공격타입 트리거
     public bool isNormal;
     public bool isPower;
     public bool isSharp;
@@ -33,18 +47,23 @@ public class Player : MonoBehaviour
 
     bool Q_IsSwitch;
     bool E_IsSwitch;
-    //Controll
-    float fAxis;
+
+    //Controller
+    float Move_Axis;
 
     bool isGround;
     bool isJump;
     bool jumping;
-    bool isAtt;
 
+    bool isAtt;
+    bool isCrouch;
+
+    public bool startSkill;
+    public bool endSkill;
 
     //Trigger
-    bool isTouchRoom;
-    public bool isBoss;
+    bool isTouchRoom;       //투명벽 구현
+    public bool isBoss;     //보스전 시작
 
     bool isHit;
 
@@ -53,17 +72,33 @@ public class Player : MonoBehaviour
 
     public ObjectManager objectManager;
     public GameManager gameManager;
-    public BoxCollider2D attack;
+    public BoxCollider2D meleeAttack;
+    public CircleCollider2D rollAttack;
 
     Animator anim;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rigid;
+    PlatformEffector2D effector;
 
     void Awake()
     {
+        maxLife = 100;
+        curLife = 100;
+        dmg = 15;
+        speed = 5;
+        roll_Speed = speed;
+
+        maxAttackDelay = 0.5f;
+
+        maxFollowCount = 3;
+        followCount = 0;
+        hpDecrease = 25;
+
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        effector = GetComponent<PlatformEffector2D>();
+
         isNormal = true;
     }
     void Update()
@@ -71,54 +106,61 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.K))
             gameManager.ShakeCam();
         InPut();
+        Input_Skill();
 
         MoveMent();
         Jump();
+        LifeCheck();
         StartCoroutine(Attack());
+        StartCoroutine(Skill());
 
         StartCoroutine(Attack_Type());
 
         StartCoroutine(LifeCheat());
     }
-    //KeyControll
+    //플레이어 이동
     void MoveMent()
     {
-        if (isTouchRoom&&!clearMap&& fAxis == 1)
+        if (isTouchRoom && !clearMap&& Move_Axis == 1)
         {
-            fAxis = 0;
+            Move_Axis = 0;
         }
-        if (isBoss)
-            fAxis = 0;
+        if (isBoss|| isCrouch)
+            Move_Axis = 0;
 
-        rigid.velocity = new Vector2(fAxis * speed, rigid.velocity.y);
-        if (fAxis != 0)
+        rigid.velocity = new Vector2(Move_Axis * speed, rigid.velocity.y);  
+        if (Move_Axis != 0)
         {
-            if (fAxis > 0)
+            if (Move_Axis > 0)
             {
-                rightCheck = true;
                 spriteRenderer.flipX = false;
-                attack.offset = new Vector2(0.6f, 0);
+                meleeAttack.offset = new Vector2(0.6f, 0);
             }
-            else if (fAxis < 0)
+            else if (Move_Axis < 0)
             {
-                rightCheck = false;
                 spriteRenderer.flipX = true;
-                attack.offset = new Vector2(-0.6f, 0);
+                meleeAttack.offset = new Vector2(-0.6f, 0);
             }
         }
     }
+    //시작 전 동작 불가
     void InPut()
     {
-        if (!isStart)
+        if (!isStart||isCrouch)
             return;
 
-        fAxis = Input.GetAxisRaw("Horizontal");
-        isAtt=Input.GetKey(KeyCode.A);
-        isJump=Input.GetKeyDown(KeyCode.S);
-        Q_IsSwitch = Input.GetKeyDown(KeyCode.Q);
-        E_IsSwitch = Input.GetKeyDown(KeyCode.E);
-        isCheat = Input.GetKeyDown(KeyCode.L);
+        Move_Axis = Input.GetAxisRaw("Horizontal"); //이동
+        isAtt=Input.GetKeyDown(KeyCode.A);          //공격
+        isJump=Input.GetKeyDown(KeyCode.S);         //점프
+        Q_IsSwitch = Input.GetKeyDown(KeyCode.Q);   //공격 타입 슬롯체인지 노멀->파워->정밀->신비
+        E_IsSwitch = Input.GetKeyDown(KeyCode.E);   //공격 타입 슬롯체인지 노멀->신비->정밀->파워
+        isCheat = Input.GetKeyDown(KeyCode.L);      //치트키= 체력 100증가
 
+    }
+    void Input_Skill()
+    {
+        startSkill = Input.GetKeyDown(KeyCode.D);      //스킬
+        endSkill = Input.GetKeyUp(KeyCode.D);
     }
     void Jump()
     {
@@ -151,16 +193,110 @@ public class Player : MonoBehaviour
         if(isBoss || !isAtt)
             yield break;
 
-        attack.enabled = true;
+        meleeAttack.enabled = true;
         anim.SetTrigger("doAttack");
         yield return new WaitForSeconds(0.1f);
 
-        attack.enabled = false;
+        meleeAttack.enabled = false;
         isAtt = false;
         curAttackDelay = 0;
     }
 
-    //Attack_Type
+    //스킬
+    IEnumerator Skill()
+    {
+        if (startSkill|| endSkill)
+        {
+            switch (skill_Type)
+            {
+                case Skill_Core.Roll:
+                    if (!endSkill)
+                    {
+                        isHit = true;
+                        Physics2D.IgnoreLayerCollision(6, 7,true);
+                        rollAttack.enabled = true;
+
+                        for (int index = 0; index < 10;)
+                        {
+                            yield return new WaitForSeconds(0.15f);
+                            speed = speed+(roll_Speed * 0.1f);
+                            index++;
+                        }
+
+                        endSkill = false;
+                        startSkill = false;
+                    }
+                    else
+                    {
+                        isHit = false;
+                        Physics2D.IgnoreLayerCollision(6, 7, false);
+                        rollAttack.enabled = false;
+
+                        for (int index = 0; index < 10;)
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            speed = speed - (roll_Speed * 0.1f);
+                            index++;
+                        }
+                        yield return null;
+                        endSkill = false;
+                        startSkill = false;
+                    }
+
+                    break;
+
+                case Skill_Core.Summon:
+                    
+                    if (curLife <= hpDecrease || followCount > maxFollowCount||endSkill)
+                        yield break;
+
+                    followCount++;
+                    gameManager.FollowerSpawn();
+                    maxLife -= hpDecrease;
+                    startSkill = false;
+                    yield return null;
+                    break;
+
+                case Skill_Core.DropAttack:
+
+                    break;
+                case Skill_Core.Crouch:
+                    if (!endSkill)
+                    {
+                        isHit = true;
+                        isCrouch = true;
+                        anim.SetBool("isLieDown", true);
+                        Physics2D.IgnoreLayerCollision(6, 7, true);
+
+                        endSkill = false;
+                        startSkill = false;
+                    }
+                    else
+                    {
+                        isHit = false;
+                        isCrouch = false;
+                        anim.SetBool("isLieDown", false);
+                        Physics2D.IgnoreLayerCollision(6, 7, false);
+
+                        yield return null;
+                        endSkill = false;
+                        startSkill = false;
+                    }
+                 break;
+            }
+        }
+
+        yield return null;
+    }
+
+    //체력 확인
+    void LifeCheck()
+    {
+        if (curLife > maxLife)
+            curLife = maxLife;
+    }
+
+    //공격타입 로직
     IEnumerator Attack_Type()
     {
         if (Q_IsSwitch)
@@ -224,32 +360,35 @@ public class Player : MonoBehaviour
         yield return null;
     }
 
-    //Cheat     Life+100
+    //치트     Life+100
     IEnumerator LifeCheat()
     {
         if (!isCheat)
             yield break;
 
         yield return null;
-        life += 100;
+        curLife += 100;
+        maxLife += 100;
 
         yield return new WaitForSeconds(0.5f);
         isCheat = false;
     }
 
-    //Hit
+    //피격
     IEnumerator OnHit(float dmg)
     {
         if (isHit)
             yield break;
 
         isHit = true;
-        life -= dmg;
+        curLife -= dmg;
         ReturnSprite(0.8f);
         anim.SetTrigger("doHit");
-        if (life < 0)
+        rigid.velocity = Vector2.zero;
+        rigid.AddForce(Vector2.up * 4, ForceMode2D.Impulse);
+
+        if (curLife < 0)
         {
-            gameManager.GameOver();
             gameObject.SetActive(false);
         }
         yield return new WaitForSeconds(0.3f);
@@ -261,7 +400,7 @@ public class Player : MonoBehaviour
     {
         spriteRenderer.color = new Color(0.4f, 0.4f, 0.4f, Alpha);
     }
-    //Trigger
+    //보스 시작 트리거
     IEnumerator BossStart()
     {
         isBoss = true;
@@ -276,8 +415,6 @@ public class Player : MonoBehaviour
         {
             Enemy enemyLogic = collision.gameObject.GetComponentInParent<Enemy>();
 
-            rigid.velocity = Vector2.zero;
-            rigid.AddForce(Vector2.up * 4, ForceMode2D.Impulse);
             StartCoroutine(OnHit(enemyLogic.dmg));
         }
 
@@ -308,40 +445,39 @@ public class Player : MonoBehaviour
             }
             collision.gameObject.SetActive(false);
         }
+        //Ground
+        if(collision.gameObject.tag=="Ground")
+        {
+            rigid.velocity = new Vector2(rigid.velocity.x, 0);
+        }
     }
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "EnemyAttack")
         {
-            rigid.velocity = Vector2.zero;
             EnemyObject enemyLogic = collision.gameObject.GetComponent<EnemyObject>();
 
-            rigid.AddForce(Vector2.up*2, ForceMode2D.Impulse);
             StartCoroutine(OnHit(enemyLogic.dmg));
         }
         if (collision.gameObject.tag == "BossAttack")
         {
-            rigid.velocity = Vector2.zero;
-            rigid.AddForce(Vector2.up * 4, ForceMode2D.Impulse);
             BossAttackObject objectLogic = collision.gameObject.GetComponent<BossAttackObject>();
-            switch (objectLogic.attackType)
+            switch (objectLogic.Att_type)
             {
-                case "Shot":
+                case BossAttackObject.Attack_Type.Melee:
                     StartCoroutine(OnHit(objectLogic.dmg));
                     break;
-                case "Range":
+                case BossAttackObject.Attack_Type.Range:
                     StartCoroutine(OnHit(objectLogic.dmg));
                     break;
             }
         }
         if (collision.gameObject.tag == "Boss")
         {
-            rigid.velocity = Vector2.zero;
             Boss bossLogic =collision.gameObject.GetComponentInParent<Boss>();
-            rigid.AddForce(Vector2.up * 4, ForceMode2D.Impulse);
+
             StartCoroutine(OnHit(bossLogic.dmg));
         }
-
         if(collision.gameObject.tag=="TriggerMap")
         {
             isTouchRoom = true;
@@ -351,14 +487,10 @@ public class Player : MonoBehaviour
             StartCoroutine(BossStart());
             collision.gameObject.SetActive(false);
         }
-
         if(collision.gameObject.tag=="Debris")
         {
             Debris debrisLogic = collision.gameObject.GetComponent<Debris>();
             collision.gameObject.SetActive(false);
-
-            rigid.velocity = Vector2.zero;
-            rigid.AddForce(Vector2.up * 4, ForceMode2D.Impulse);
 
             StartCoroutine(OnHit(debrisLogic.dmg));
         }

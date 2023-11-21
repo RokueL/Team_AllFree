@@ -5,8 +5,6 @@ using UnityEngine;
 public class LongRangeEnemy : Enemy
 {
     public int cointCount;
-    int nextMove;
-
 
     public float curShotDelay;
 
@@ -204,81 +202,6 @@ public class LongRangeEnemy : Enemy
 
         isHit = false;
         ReturnSprite(1f);
-    }
-    void DamageLogic(float dmg)
-    {
-        Player playerLogic = player.GetComponent<Player>();
-        switch (type)
-        {
-            case Def_Type.Normal:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health -= dmg;
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 1.5f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 1.5f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 1.5f);
-                        break;
-                }
-                break;
-            case Def_Type.Nimble:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 1.3f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 0.8f);
-                        break;
-                }
-                break;
-            case Def_Type.Resist:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 1.5f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 0.5f);
-                        break;
-                }
-                break;
-            case Def_Type.Solid:
-                switch (playerLogic.type)
-                {
-                    case Player.Att_Type.Normal:
-                        health = health - (dmg * 0.5f);
-                        break;
-                    case Player.Att_Type.Power:
-                        health = health - (dmg * 0.8f);
-                        break;
-                    case Player.Att_Type.Sharp:
-                        health = health - (dmg * 0.8f);
-                        break;
-                    case Player.Att_Type.Mystic:
-                        health = health - (dmg * 1.5f);
-                        break;
-                }
-                break;
-        }
     }
     void ReturnSprite(float Alpha)
     {

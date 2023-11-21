@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
+    //플레이어 소환물
+    public GameObject followCatPrb;
+
+    //원거리 공격
     public GameObject snakeAttackPrb;
     public GameObject flowerAttackPrb;
 
-    public GameObject bossAAttack_0Prb; //Scratch
-    public GameObject bossAAttack_1Prb; //Scale
+    public GameObject bossAAttack_0Prb; //근거리 공격
+    public GameObject bossAAttack_1Prb; //원거리 공격
 
+    //낙하물
     public GameObject debrisAPrb;
     public GameObject debrisBPrb;
     public GameObject debrisCPrb;
@@ -32,8 +37,11 @@ public class ObjectManager : MonoBehaviour
     public GameObject health_CorePrb;
 
     public GameObject itemBoxPrb;
-    //Attack Object
 
+
+    GameObject[] followCat;
+
+    //Attack Object
     GameObject[] snakeAttack;
     GameObject[] flowerAttack;
 
@@ -72,6 +80,8 @@ public class ObjectManager : MonoBehaviour
 
     void Awake()
     {
+        followCat = new GameObject[10];
+
         snakeAttack = new GameObject[15];
         flowerAttack = new GameObject[30];
 
@@ -105,6 +115,12 @@ public class ObjectManager : MonoBehaviour
     }
     void Generate()
     {
+        for (int index = 0; index < followCat.Length; index++)
+        {
+            followCat[index] = Instantiate(followCatPrb);
+            followCat[index].SetActive(false);
+        }
+
         for (int index=0;index<snakeAttack.Length;index++)
         {
             snakeAttack[index] = Instantiate(snakeAttackPrb);
@@ -218,6 +234,10 @@ public class ObjectManager : MonoBehaviour
     {
         switch(type)
         {
+            case "followCat":
+                targetPool = followCat;
+                break;
+
             case "snakeAttack":
                 targetPool = snakeAttack;
                 break;
