@@ -3,26 +3,40 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - EnemyAttack
+  - Border
+  - Boss
+  - Ground
+  - Item
+  - Enemy
+  - BossAttack
+  - TriggerMap
+  - BossTrigger
+  - PlayerAttack
+  - ItemBox
+  - Debris
+  - Rever
+  - Follow
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Enemy
+  - Boss
+  - Border
+  - BossAttackObject
+  - Item
+  - PlayerAttack
+  - ItemBox
+  - Debris
+  - Rever
+  - PostProcess
+  - UnLitUI
   - 
   - 
   - 
