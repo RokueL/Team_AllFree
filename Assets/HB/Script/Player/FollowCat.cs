@@ -123,6 +123,7 @@ public class FollowCat : MonoBehaviour
         isAtt = Input.GetKeyDown(KeyCode.A);          //공격
         isJump = Input.GetKeyDown(KeyCode.S);         //점프
     }
+
     IEnumerator Jump()
     {
         if (followRigid.velocity.y == 0)

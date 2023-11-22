@@ -31,6 +31,9 @@ public class Player : MonoBehaviour
     float curAttackDelay;
     float maxAttackDelay;
 
+    public float curSkillDelay;
+    public float maxSkillDelay;
+
     public bool clearMap;       //클리어 시 트리거 작동(미구현)
     public bool isStart;        //시작 전 컨트롤제어
 
@@ -58,6 +61,9 @@ public class Player : MonoBehaviour
     bool isAtt;
     bool isCrouch;
 
+    bool onSkill;
+    bool offSkill;
+
     public bool startSkill;
     public bool endSkill;
 
@@ -69,7 +75,7 @@ public class Player : MonoBehaviour
     bool isHit;
 
     bool isCheat;
-
+    public bool isCameraMove;
 
     public ObjectManager objectManager;
     public GameManager gameManager;
@@ -90,6 +96,7 @@ public class Player : MonoBehaviour
         roll_Speed = speed;
 
         maxAttackDelay = 0.5f;
+        maxSkillDelay = 2f;
 
         maxFollowCount = 3;
         followCount = 0;
@@ -104,10 +111,13 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-            gameManager.ShakeCam(0.3f,0.7f);
         InPut();
         Input_Skill();
+        SkillOn();
+        if (isCameraMove)
+            Stop();
+        else
+            Move();
 
         MoveMent();
         Jump();
@@ -126,7 +136,7 @@ public class Player : MonoBehaviour
         {
             Move_Axis = 0;
         }
-        if (isTouchRoom||isCrouch)
+        if (isTouchRoom||isCrouch|| isCameraMove)
             Move_Axis = 0;
 
         rigid.velocity = new Vector2(Move_Axis * speed, rigid.velocity.y);  
@@ -144,10 +154,20 @@ public class Player : MonoBehaviour
             }
         }
     }
+    void Stop()
+    {
+        rigid.velocity = Vector2.zero;
+        rigid.gravityScale = 0;
+    }
+    void Move()
+    {
+        rigid.gravityScale = 3;
+    }
+
     //시작 전 동작 불가
     void InPut()
     {
-        if (!isStart||isCrouch)
+        if (!isStart||isCrouch|| isCameraMove)
             return;
 
         Move_Axis = Input.GetAxisRaw("Horizontal"); //이동
@@ -160,6 +180,9 @@ public class Player : MonoBehaviour
     }
     void Input_Skill()
     {
+        if (!isStart || isCameraMove)
+            return;
+
         startSkill = Input.GetKeyDown(KeyCode.D);      //스킬
         endSkill = Input.GetKeyUp(KeyCode.D);
     }
@@ -186,6 +209,7 @@ public class Player : MonoBehaviour
             jumping = true;
         }
     }
+    
     IEnumerator Attack()
     {
         curAttackDelay += Time.deltaTime;
@@ -214,6 +238,8 @@ public class Player : MonoBehaviour
                     if (!endSkill)
                     {
                         isHit = true;
+                        onSkill = true;
+                        offSkill = false;
                         Physics2D.IgnoreLayerCollision(6, 7,true);
                         rollAttack.enabled = true;
 
@@ -229,7 +255,11 @@ public class Player : MonoBehaviour
                     }
                     else
                     {
+                        if (offSkill)
+                            yield break;
+
                         isHit = false;
+                        onSkill = false;
                         Physics2D.IgnoreLayerCollision(6, 7, false);
                         rollAttack.enabled = false;
 
@@ -242,6 +272,7 @@ public class Player : MonoBehaviour
                         yield return null;
                         endSkill = false;
                         startSkill = false;
+                        offSkill = true;
                     }
 
                     break;
@@ -265,7 +296,9 @@ public class Player : MonoBehaviour
                     if (!endSkill)
                     {
                         isHit = true;
+                        onSkill = true;
                         isCrouch = true;
+                        offSkill = false;
                         anim.SetBool("isLieDown", true);
                         Physics2D.IgnoreLayerCollision(6, 7, true);
 
@@ -274,7 +307,11 @@ public class Player : MonoBehaviour
                     }
                     else
                     {
+                        if (offSkill)
+                            yield break;
+
                         isHit = false;
+                        onSkill = false;
                         isCrouch = false;
                         anim.SetBool("isLieDown", false);
                         Physics2D.IgnoreLayerCollision(6, 7, false);
@@ -282,6 +319,7 @@ public class Player : MonoBehaviour
                         yield return null;
                         endSkill = false;
                         startSkill = false;
+                        offSkill = true;
                     }
                  break;
             }
@@ -289,7 +327,25 @@ public class Player : MonoBehaviour
 
         yield return null;
     }
+    void SkillOn()
+    {
+        if (onSkill)
+        {
+            curSkillDelay += Time.deltaTime;
 
+            if (curSkillDelay > maxSkillDelay)
+            {
+                SkillOff();
+                curSkillDelay = 0;
+            }
+        }
+        else
+            curSkillDelay = 0;
+    }
+    void SkillOff()
+    {
+        endSkill = true;
+    }
     //체력 확인
     void LifeCheck()
     {
@@ -486,7 +542,13 @@ public class Player : MonoBehaviour
 
             StartCoroutine(OnHit(bossLogic.dmg));
         }
-        if(collision.gameObject.tag=="TriggerMap")
+        if (collision.gameObject.tag == "EliteMonster")
+        {
+            EliteEnemy eliteLogic = collision.gameObject.GetComponentInParent<EliteEnemy>();
+
+            StartCoroutine(OnHit(eliteLogic.dmg));
+        }
+        if (collision.gameObject.tag=="TriggerMap")
         {
             isTouchRoom = true;
         }

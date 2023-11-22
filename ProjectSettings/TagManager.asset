@@ -17,6 +17,8 @@ TagManager:
   - ItemBox
   - Debris
   - Rever
+  - Follow
+  - EliteMonster
   layers:
   - Default
   - TransparentFX

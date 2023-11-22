@@ -135,7 +135,7 @@ GameObject:
   m_Layer: 0
   m_Name: CameraPointLeft
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1064,6 +1064,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wild_Grass_0
       objectReference: {fileID: 0}
+    - target: {fileID: 1660024875649028, guid: 3beb7c70f130deb4b90e42e700665d33, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 4425964724695640, guid: 3beb7c70f130deb4b90e42e700665d33, type: 3}
       propertyPath: m_LocalPosition.x
       value: 39.437855
@@ -1225,7 +1229,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0.00012207031, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &80578331
@@ -1412,7 +1416,7 @@ GameObject:
   m_Layer: 0
   m_Name: CameraPointRight
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1967,7 +1971,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -0.000061035156, y: 0}
+  m_AnchoredPosition: {x: -0.00012207031, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &154140992
@@ -8019,8 +8023,44 @@ Transform:
   - {fileID: 2012058013}
   - {fileID: 1506870833}
   - {fileID: 454446677}
+  - {fileID: 1443307001}
+  - {fileID: 1674884866}
+  - {fileID: 1741930092}
+  - {fileID: 1329393268}
+  - {fileID: 388253780}
   - {fileID: 304392245}
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &388253779
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388253780}
+  m_Layer: 0
+  m_Name: EliteSkillSpot (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &388253780
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388253779}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 55, y: -7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 368477689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &396034591
 PrefabInstance:
@@ -9015,7 +9055,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.5
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -10164,6 +10204,8 @@ MonoBehaviour:
   jumpPower: 12
   speed: 5
   coin: 0
+  curSkillDelay: 0
+  maxSkillDelay: 0
   clearMap: 1
   isStart: 0
   damageCore: 0
@@ -10177,6 +10219,7 @@ MonoBehaviour:
   endSkill: 0
   isElite: 0
   isBoss: 0
+  isCameraMove: 0
   objectManager: {fileID: 1704467653}
   gameManager: {fileID: 2109691542}
   meleeAttack: {fileID: 1434994180}
@@ -20821,6 +20864,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ground3_Slope_L_11
       objectReference: {fileID: 0}
+    - target: {fileID: 1423901255806886, guid: 67d92f9e5469d654883afb768406c9f5, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 4586124414381918, guid: 67d92f9e5469d654883afb768406c9f5, type: 3}
       propertyPath: m_LocalScale.y
       value: 0.8728054
@@ -21683,6 +21730,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Flower_7
       objectReference: {fileID: 0}
+    - target: {fileID: 1713931945786336, guid: 9f602f503f03c3d4cb731c611ca9ccf9, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 4082717691163692, guid: 9f602f503f03c3d4cb731c611ca9ccf9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 21.988827
@@ -21740,7 +21791,7 @@ GameObject:
   m_Layer: 0
   m_Name: CameraPointTop
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -27431,6 +27482,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grass_2
       objectReference: {fileID: 0}
+    - target: {fileID: 1519208657595600, guid: 1db63a045d78636458b126c46020bee9, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: 4915377589934096, guid: 1db63a045d78636458b126c46020bee9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 47.350372
@@ -27576,6 +27631,10 @@ PrefabInstance:
     - target: {fileID: 1874400818597114, guid: d5979a3dc5c1094418d04d130d2b6e80, type: 3}
       propertyPath: m_Name
       value: Ground3_Slope_L_0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874400818597114, guid: d5979a3dc5c1094418d04d130d2b6e80, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     - target: {fileID: 4116760197552338, guid: d5979a3dc5c1094418d04d130d2b6e80, type: 3}
       propertyPath: m_LocalPosition.x
@@ -39178,6 +39237,37 @@ PolygonCollider2D:
       - {x: 10.969999, y: -1.56}
       - {x: 11.49, y: -1.4599999}
   m_UseDelaunayMesh: 0
+--- !u!1 &1329393267
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1329393268}
+  m_Layer: 0
+  m_Name: EliteSkillSpot (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1329393268
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1329393267}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 52, y: -7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 368477689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1333155579
 GameObject:
   m_ObjectHideFlags: 0
@@ -39589,6 +39679,10 @@ PrefabInstance:
     - target: {fileID: 1434524918950930, guid: 55c0623d0fc16d94f9f9c82bd4c1fc43, type: 3}
       propertyPath: m_Name
       value: Grass_14 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434524918950930, guid: 55c0623d0fc16d94f9f9c82bd4c1fc43, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     - target: {fileID: 4139158127049306, guid: 55c0623d0fc16d94f9f9c82bd4c1fc43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -40140,6 +40234,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 653948987}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1443307000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1443307001}
+  m_Layer: 0
+  m_Name: EliteSkillSpot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1443307001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443307000}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 43, y: -7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 368477689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1463494492 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4214367455335420, guid: 26d4de62c36f0a6469b2ef2367ee2b05, type: 3}
@@ -40527,6 +40652,10 @@ PrefabInstance:
     - target: {fileID: 1414292346288198, guid: 61c6d28838e9b704dbf3bce4f7a9216e, type: 3}
       propertyPath: m_Name
       value: Ground3_Slope_R_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1414292346288198, guid: 61c6d28838e9b704dbf3bce4f7a9216e, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     - target: {fileID: 4168536048568624, guid: 61c6d28838e9b704dbf3bce4f7a9216e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -42070,6 +42199,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f53744faaac5e48439597570c70e0de5, type: 3}
+--- !u!1 &1674884865
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1674884866}
+  m_Layer: 0
+  m_Name: EliteSkillSpot (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1674884866
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1674884865}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 25.4, y: -7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 368477689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1687967586
 GameObject:
   m_ObjectHideFlags: 0
@@ -42310,7 +42470,7 @@ GameObject:
   m_Layer: 0
   m_Name: CameraPointBottom
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -42509,6 +42669,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1627042273}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1741930091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1741930092}
+  m_Layer: 0
+  m_Name: EliteSkillSpot (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1741930092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741930091}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 49, y: -7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 368477689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1745536394
 GameObject:
@@ -47455,6 +47646,10 @@ PrefabInstance:
     - target: {fileID: 1434524918950930, guid: 55c0623d0fc16d94f9f9c82bd4c1fc43, type: 3}
       propertyPath: m_Name
       value: Grass_14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434524918950930, guid: 55c0623d0fc16d94f9f9c82bd4c1fc43, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     - target: {fileID: 4139158127049306, guid: 55c0623d0fc16d94f9f9c82bd4c1fc43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -55106,7 +55301,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2034641752}
   - component: {fileID: 2034641751}
-  m_Layer: 6
+  m_Layer: 12
   m_Name: RollAttack
   m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
@@ -55829,11 +56024,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67cbb71ec52ae8a48a64a1bf9973586c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  viewHeight_Y: 0
+  viewHeight_X: 0
+  harf_ViewHeaight_Y: 0
+  harf_ViewHeaight_X: 0
   target:
   - {fileID: 919797040}
   - {fileID: 1699572061}
   - {fileID: 87349346}
   - {fileID: 3098827}
+  eliteSkill_Spot:
+  - {fileID: 1443307001}
+  - {fileID: 1674884866}
+  - {fileID: 1741930092}
+  - {fileID: 1329393268}
+  - {fileID: 388253780}
   Range_SpawnPoint: []
   Shot_SpawnPoint: []
   Item_SpawnPoint: []

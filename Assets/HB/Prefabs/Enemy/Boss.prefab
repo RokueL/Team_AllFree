@@ -87,7 +87,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2516377621806479384
 Transform:
   m_ObjectHideFlags: 0
@@ -245,13 +245,9 @@ MonoBehaviour:
   type: 0
   maxdistance: 0
   mindistance: 0
-  speed: 0
-  curAttackDelay: 0
-  maxAttackDelay: 0
-  curAggroTime: 0
-  maxAggroTime: 0
   dmg: 0
-  nextMove: 0
+  health: 0
+  maxHealth: 0
   player: {fileID: 0}
   objectManager: {fileID: 0}
   gameManager: {fileID: 0}
@@ -267,10 +263,11 @@ MonoBehaviour:
   PatternDelay: 0
   curShotDelay: 0
   maxShotDelay: 0
-  isAppear: 0
+  isStart: 0
   rageState: 0
   Rolling: {fileID: 0}
   enemyScript: {fileID: 0}
+  Trigger: {fileID: 0}
 --- !u!95 &8175773494483863758
 Animator:
   serializedVersion: 5

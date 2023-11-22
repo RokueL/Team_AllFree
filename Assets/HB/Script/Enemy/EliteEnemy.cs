@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class EliteEnemy : Enemy
 {
-    public Transform point;
+    public Transform[] point;
     public Enemy enemyScript;
 
     float frontPos;
+
+    float curSkillDelay;
+    float maxSkillDelay;
+
     bool isStart;
+    bool isSkill;
 
     public BoxCollider2D attack;
     public BoxCollider2D double_Attack;
+    public BoxCollider2D dig;
     public GameObject Trigger;
 
     void Awake()
@@ -21,6 +27,7 @@ public class EliteEnemy : Enemy
         anim = GetComponent<Animator>();
 
         speed = 1.5f;
+        maxSkillDelay = 6f;
 
         forward = new Vector2(speed, rigid.velocity.y).normalized;
         maxAttackDelay = Random.Range(1.5f, 3f);
@@ -41,8 +48,14 @@ public class EliteEnemy : Enemy
         Move();
         Think();
         //GroundCheck();
-        if (isDie || isAttack || !isStart)
+        if (isDie || isAttack || !isStart||isSkill)
             rigid.velocity = new Vector2(0,rigid.velocity.y);
+
+        if (curSkillDelay > maxSkillDelay)
+        {
+            StartCoroutine (Skill());
+            curSkillDelay = 0;
+        }
     }
 
     //Start Setting
@@ -85,14 +98,14 @@ public class EliteEnemy : Enemy
     IEnumerator EliteStart()
     {
         Physics2D.IgnoreLayerCollision(8, 9, true);
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(1.1f);
 
         gameManager.ShakeCam(1f,0.6f);
-        yield return new WaitForSeconds(0.6f);
-        Physics2D.IgnoreLayerCollision(8, 9, false);
-        anim.SetTrigger("doAttack");
-
         yield return new WaitForSeconds(1f);
+
+        Physics2D.IgnoreLayerCollision(8, 9, false);
+        anim.SetTrigger("doDoubleAttack");
+        yield return new WaitForSeconds(2f);
         isStart = true;
 
     }
@@ -114,18 +127,24 @@ public class EliteEnemy : Enemy
     }
     void Follow()
     {
-        if (player.transform.position.x - transform.position.x < 0)
+        if (player.transform.position.x - transform.position.x < -2)
         {
             frontPos = -speed;
-            attack.offset = new Vector2(-1.5f, 0);
-            double_Attack.offset = new Vector2(-1.5f, 0);
             spriteRenderer.flipX = false;
         }
-        else if (player.transform.position.x - transform.position.x >= 0)
+        else if (player.transform.position.x - transform.position.x >= 2)
         {
             frontPos = speed;
-            attack.offset = new Vector2(-1.5f, 0);
-            double_Attack.offset = new Vector2(-1.5f, 0);
+            spriteRenderer.flipX = true;
+        }
+        else if (player.transform.position.x - transform.position.x >= -2&& player.transform.position.x - transform.position.x <= 0)
+        {
+            frontPos = speed;
+            spriteRenderer.flipX = false;
+        }
+        else if (player.transform.position.x - transform.position.x < 2&& player.transform.position.x - transform.position.x > 0)
+        {
+            frontPos = -speed;
             spriteRenderer.flipX = true;
         }
     }
@@ -137,11 +156,17 @@ public class EliteEnemy : Enemy
         {
             forward = new Vector2(-speed, rigid.velocity.y).normalized;
             nextMove = -1;
+
+            attack.offset = new Vector2(-1.5f, 0);
+            double_Attack.offset = new Vector2(-1.5f, 0);
         }
         else if (spriteRenderer.flipX == true)
         {
             forward = new Vector2(speed, rigid.velocity.y).normalized;
             nextMove = 1;
+
+            attack.offset = new Vector2(1.5f, 0);
+            double_Attack.offset = new Vector2(1.5f, 0);
         }
     }
 
@@ -159,6 +184,8 @@ public class EliteEnemy : Enemy
                 curAttackDelay = 0;
             }
         }
+        else
+            curSkillDelay += Time.deltaTime;
     }
     IEnumerator Attack()
     {
@@ -207,20 +234,50 @@ public class EliteEnemy : Enemy
         isHit = true;
 
         DamageLogic(dmg);
-        ReturnSprite(0.4f);
+        ReturnSprite(1f);
 
         if (health < 0)
         {
             isDie = true;
             //anim.SetTrigger("doDead");
+            ReturnSprite(0.5f);
             yield return new WaitForSeconds(1f);
+
             gameObject.SetActive(false);
+            gameManager.CreateBoss();
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
 
         isHit = false;
         ReturnSprite(1f);
     }
+    IEnumerator Skill()
+    {
+        isSkill = true;
+        yield return null;
+
+        rigid.gravityScale = 10;
+        rigid.AddForce(Vector2.up * 20,ForceMode2D.Impulse);
+        Physics2D.IgnoreLayerCollision(3, 8, true);
+        spriteRenderer.sortingOrder = 0;
+
+        yield return new WaitForSeconds(3f);
+
+        int ranPoint = Random.Range(0, point.Length);
+        transform.position = point[ranPoint].position;
+
+        dig.enabled = true;
+        rigid.velocity = Vector2.zero;
+        rigid.AddForce(Vector2.up * 40, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(1f);
+
+        Physics2D.IgnoreLayerCollision(3, 8, false);
+        rigid.gravityScale = 3;
+        dig.enabled = false;
+        isSkill = false;
+    }
+
     void ReturnSprite(float Alpha)
     {
         spriteRenderer.color = new Color(0.4f, 0.4f, 0.4f, Alpha);
@@ -232,13 +289,6 @@ public class EliteEnemy : Enemy
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg));
-
-            Vector2 pos = new Vector2(player.transform.position.x - transform.position.x, 0);
-            //XÁÂÇ¥ ³Ë¹é
-            if (collision.gameObject.transform.position.x - transform.position.x < 0)
-                rigid.AddForce(-pos * 4, ForceMode2D.Impulse);
-            else if (collision.gameObject.transform.position.x - transform.position.x > 0)
-                rigid.AddForce(-pos * 4, ForceMode2D.Impulse);
         }
     }
 }

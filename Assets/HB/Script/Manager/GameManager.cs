@@ -9,11 +9,10 @@ public class GameManager : MonoBehaviour
     //Camera
     float delay;
     float Move_smoothTime;
-    float viewHeight_Y;
-    float viewHeight_X;
-    float harf_ViewHeaight_Y;
-    float harf_ViewHeaight_X;
-
+    public float viewHeight_Y;
+    public float viewHeight_X;
+    public  float harf_ViewHeaight_Y;
+    public float harf_ViewHeaight_X;
 
     [Header("상하좌우 카메라 타겟")]
     public Transform[] target;
@@ -27,6 +26,10 @@ public class GameManager : MonoBehaviour
 
     //ShakeCamera
     Vector3 myVec;
+
+
+    [Header("[스폰 지점]엘리트 몬스터 스킬")]
+    public Transform[] eliteSkill_Spot;
 
     [Header("[스폰 지점]{원거리}{근거리}{아이템박스}{낙하물}{보스}")]
     public Transform[] Range_SpawnPoint;
@@ -52,17 +55,23 @@ public class GameManager : MonoBehaviour
     [Header("몬스터스크립트")]
     public Enemy enemyScript;
 
-
     void Awake()
     {
+        delay = 0.01f;  //거리가 0.01까지 타겟지점으로 카메라 이동
+        Move_smoothTime = 0.2f; //카메라 속도
+
         //카메라 사이즈
         harf_ViewHeaight_Y = Camera.main.orthographicSize;
         harf_ViewHeaight_X = Camera.main.orthographicSize * 16 / 9;
         viewHeight_Y = harf_ViewHeaight_Y * 2;
         viewHeight_X = harf_ViewHeaight_X * 2;
 
-        delay = 0.01f;  //거리가 0.01까지 타겟지점으로 카메라 이동
-        Move_smoothTime = 0.2f; //카메라 속도
+        //이동 카메라 좌표
+        target[0].transform.localPosition = new Vector3(0,viewHeight_Y+delay,-1);
+        target[1].transform.localPosition = new Vector3(0, -viewHeight_Y + delay, -1);
+        target[2].transform.localPosition = new Vector3(viewHeight_X+delay,0, -1);
+        target[3].transform.localPosition = new Vector3(-viewHeight_X + delay, 0, -1);
+        
 
         SpawnEnemy();//레벨 지정 전까지 임시 스폰
     }
@@ -89,22 +98,20 @@ public class GameManager : MonoBehaviour
         }
         else if (player.transform.position.y - harf_ViewHeaight_Y < target[1].position.y)
         {
-            PlayerStop();
             isBottomMap = true;
         }
         else if (player.transform.position.x + harf_ViewHeaight_X > target[2].position.x)
         {
-            PlayerStop();
             isRightMap = true;
         }
         if (player.transform.position.x - harf_ViewHeaight_X < target[3].position.x)
         {
-            PlayerStop();
             isLeftMap = true;
         }
     }       //카메라 트리거
     void NextMap()
     {
+        Player playerLogic = player.GetComponent<Player>();
         if (isTopMap)
         {
             Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position,
@@ -138,11 +145,14 @@ public class GameManager : MonoBehaviour
             Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position,
                 target[2].position, ref velocity, Move_smoothTime);
 
+            playerLogic.isCameraMove = true;
             if (Vector3.Distance(target[2].position, Camera.main.transform.position) < delay)
             {
                 isRightMap = false;
                 for (int index = 0; index < 4; index++)
                 {
+                    playerLogic.isCameraMove = false;
+
                     target[index].position = target[index].position + new Vector3(viewHeight_X - delay, 0, 0);
                 }
             }
@@ -152,21 +162,19 @@ public class GameManager : MonoBehaviour
             Camera.main.transform.position = Vector3.SmoothDamp(Camera.main.transform.position,
                 target[3].position, ref velocity, Move_smoothTime);
 
+            playerLogic.isCameraMove = true;
             if (Vector3.Distance(target[3].position, Camera.main.transform.position) < delay)
             {
                 isLeftMap = false;
                 for (int index = 0; index < 4; index++)
                 {
+                    playerLogic.isCameraMove = false;
+
                     target[index].position = target[index].position + new Vector3(-(viewHeight_X - delay), 0, 0);
                 }
             }
         }
     }           //다음맵으로 카메라 이동
-    public void PlayerStop()
-    {
-        Rigidbody2D p_Rigid = player.GetComponent<Rigidbody2D>();
-        p_Rigid.velocity = Vector2.zero;
-    } //카메라 이동시 정지  ※상단이동시에는 정지 없음
 
     //카메라 흔들기
     public void ShakeCam(float power, float shakeTime)
@@ -207,7 +215,6 @@ public class GameManager : MonoBehaviour
         CreateMonsterA();
         CreateMonsterB();
         CreateItemBox();
-        CreateBoss();
     }
 
     public void GameReStart()
@@ -220,7 +227,7 @@ public class GameManager : MonoBehaviour
     }
 
     //몬스터 및 아이템박스 보스 스폰
-    void CreateBoss()
+    public void CreateBoss()
     {
 
         GameObject boss = objectManager.MakeObj("bossA");
@@ -248,6 +255,8 @@ public class GameManager : MonoBehaviour
         eliteLogic.enemyScript = enemyScript;
         eliteLogic.Trigger = boss_Trigger;
         eliteLogic.gameManager = this;
+        eliteLogic.point = eliteSkill_Spot;
+
     }
     void CreateMonsterA()
     {
@@ -356,6 +365,7 @@ public class GameManager : MonoBehaviour
         followCatLogic.objectManager = objectManager;
         followCatLogic.parent = player.transform;
         followCatLogic.attack = followCat.GetComponentInChildren<BoxCollider2D>();
+
     }
     public IEnumerator TeleportParticle(Transform target)
     {
