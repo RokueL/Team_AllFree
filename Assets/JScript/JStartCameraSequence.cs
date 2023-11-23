@@ -38,6 +38,8 @@ public class JStartCameraSequence : MonoBehaviour
     private void PlayerStartMove()
     {
         Player.GetComponent<Player>().isStart = true;
+        Animator playerAnim = Player.GetComponent<Animator>();
+        playerAnim.SetBool("isLieDown", false);
     }
     
     void Awake()

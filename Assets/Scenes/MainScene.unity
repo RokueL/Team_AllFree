@@ -148,7 +148,7 @@ Transform:
   m_GameObject: {fileID: 3098826}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -25, y: 0, z: -1}
+  m_LocalPosition: {x: -25, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1429,7 +1429,7 @@ Transform:
   m_GameObject: {fileID: 87349345}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 25, y: 0, z: -1}
+  m_LocalPosition: {x: 25, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2469,6 +2469,43 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1627042273}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &246980970
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 246980971}
+  m_Layer: 0
+  m_Name: DebrisPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &246980971
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246980970}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 75, y: 10, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1740543043}
+  - {fileID: 1928055127}
+  - {fileID: 666708095}
+  - {fileID: 1824876414}
+  - {fileID: 1742619611}
+  - {fileID: 1685470890}
+  m_Father: {fileID: 368477689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &258193347
 GameObject:
@@ -7426,7 +7463,7 @@ Transform:
   m_GameObject: {fileID: 304392244}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 79.37, y: -2.38, z: 0}
+  m_LocalPosition: {x: 79.37, y: -3.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8029,6 +8066,7 @@ Transform:
   - {fileID: 1329393268}
   - {fileID: 388253780}
   - {fileID: 304392245}
+  - {fileID: 246980971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &388253779
@@ -8043,7 +8081,7 @@ GameObject:
   m_Layer: 0
   m_Name: EliteSkillSpot (4)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -8605,6 +8643,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2109691542}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: SmoothCameraOn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &446345633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8817,7 +8867,7 @@ Transform:
   m_GameObject: {fileID: 454446676}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 59.2, y: 16.34, z: 0}
+  m_LocalPosition: {x: 49.33, y: 5.95, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10215,8 +10265,7 @@ MonoBehaviour:
   isPower: 0
   isSharp: 0
   isMystic: 0
-  startSkill: 0
-  endSkill: 0
+  OnSkill: 0
   isElite: 0
   isBoss: 0
   isCameraMove: 0
@@ -10248,6 +10297,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4119997739719546, guid: 4d16386c7830e8049a49426acb249efc, type: 3}
   m_PrefabInstance: {fileID: 919897758}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &666708094
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 666708095}
+  m_Layer: 0
+  m_Name: DebrisPoint (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &666708095
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666708094}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 246980971}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &680119104
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20865,6 +20945,10 @@ PrefabInstance:
       value: Ground3_Slope_L_11
       objectReference: {fileID: 0}
     - target: {fileID: 1423901255806886, guid: 67d92f9e5469d654883afb768406c9f5, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1423901255806886, guid: 67d92f9e5469d654883afb768406c9f5, type: 3}
       propertyPath: m_TagString
       value: Ground
       objectReference: {fileID: 0}
@@ -21804,7 +21888,7 @@ Transform:
   m_GameObject: {fileID: 919797039}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 14, z: -1}
+  m_LocalPosition: {x: 0, y: 14, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22430,7 +22514,7 @@ Transform:
   m_GameObject: {fileID: 997570817}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 77.5, y: 7, z: 0}
+  m_LocalPosition: {x: 74.5, y: 7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22443,7 +22527,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 997570817}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -27631,6 +27715,10 @@ PrefabInstance:
     - target: {fileID: 1874400818597114, guid: d5979a3dc5c1094418d04d130d2b6e80, type: 3}
       propertyPath: m_Name
       value: Ground3_Slope_L_0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874400818597114, guid: d5979a3dc5c1094418d04d130d2b6e80, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1874400818597114, guid: d5979a3dc5c1094418d04d130d2b6e80, type: 3}
       propertyPath: m_TagString
@@ -38701,7 +38789,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1262266803}
   - component: {fileID: 1262266804}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Fog2_Back (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38871,7 +38959,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.06517887, y: 2.3544955}
@@ -39249,7 +39337,7 @@ GameObject:
   m_Layer: 0
   m_Name: EliteSkillSpot (3)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -40073,7 +40161,7 @@ Transform:
   m_GameObject: {fileID: 1419251835}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3, y: 0, z: 0}
+  m_LocalPosition: {x: 74, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -40246,7 +40334,7 @@ GameObject:
   m_Layer: 0
   m_Name: EliteSkillSpot
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -40530,7 +40618,7 @@ Transform:
   m_GameObject: {fileID: 1506870832}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 73.52, y: -3, z: 0}
+  m_LocalPosition: {x: 73.36, y: 2.59, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40565,7 +40653,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -40579,7 +40667,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 26, y: 1}
+  m_Size: {x: 20, y: 10}
   m_EdgeRadius: 0
 --- !u!1 &1513746819
 GameObject:
@@ -40652,6 +40740,10 @@ PrefabInstance:
     - target: {fileID: 1414292346288198, guid: 61c6d28838e9b704dbf3bce4f7a9216e, type: 3}
       propertyPath: m_Name
       value: Ground3_Slope_R_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1414292346288198, guid: 61c6d28838e9b704dbf3bce4f7a9216e, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1414292346288198, guid: 61c6d28838e9b704dbf3bce4f7a9216e, type: 3}
       propertyPath: m_TagString
@@ -41412,7 +41504,7 @@ Transform:
   m_GameObject: {fileID: 1602011121}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 65, y: 0, z: 0}
+  m_LocalPosition: {x: 62, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -41425,7 +41517,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1602011121}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -42211,7 +42303,7 @@ GameObject:
   m_Layer: 0
   m_Name: EliteSkillSpot (1)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -42224,11 +42316,42 @@ Transform:
   m_GameObject: {fileID: 1674884865}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 25.4, y: -7, z: 0}
+  m_LocalPosition: {x: 46, y: -7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 368477689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1685470889
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1685470890}
+  m_Layer: 0
+  m_Name: DebrisPoint (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1685470890
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1685470889}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 246980971}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1687967586
 GameObject:
@@ -42483,7 +42606,7 @@ Transform:
   m_GameObject: {fileID: 1699572060}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -14, z: -1}
+  m_LocalPosition: {x: 0, y: -14, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42518,6 +42641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e46566cd256076048855b5b241306ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ground_EffectPrb: {fileID: 4883830244708611873, guid: e0f2505ea059e464ab2f762171ac4d7e, type: 3}
   followCatPrb: {fileID: 6618168524693097639, guid: a1575ed0adc7b594bb25f6595c4cf8bd, type: 3}
   teleportPrb: {fileID: 4232381686003039326, guid: bec39962d86fada4c9a6d10bc5b675ab, type: 3}
   snakeAttackPrb: {fileID: 7328467578734848916, guid: 5e1c00517466bae48acd970bc4126d6c, type: 3}
@@ -42534,9 +42658,9 @@ MonoBehaviour:
   silverPrb: {fileID: 7433655225021468189, guid: 9a4a83627c8fd0c4ea55e87f86ca4f72, type: 3}
   bronzePrb: {fileID: 1137352009298371660, guid: 4527e6c939df1914187d6d7dc522f3cb, type: 3}
   itemBoxPrb: {fileID: 4034453297578042278, guid: 0a3dc68be2a5a7042823e449453a9ba0, type: 3}
-  coreAPrb: {fileID: 6261805773336585643, guid: 54c3a08e3f9ee0b48ad0e4f32c89d1d5, type: 3}
-  coreBPrb: {fileID: 6261805773336585643, guid: 54c3a08e3f9ee0b48ad0e4f32c89d1d5, type: 3}
-  coreCPrb: {fileID: 6261805773336585643, guid: 54c3a08e3f9ee0b48ad0e4f32c89d1d5, type: 3}
+  coreAPrb: {fileID: 7433655225021468189, guid: 9a4a83627c8fd0c4ea55e87f86ca4f72, type: 3}
+  coreBPrb: {fileID: 7433655225021468189, guid: 9a4a83627c8fd0c4ea55e87f86ca4f72, type: 3}
+  coreCPrb: {fileID: 7433655225021468189, guid: 9a4a83627c8fd0c4ea55e87f86ca4f72, type: 3}
   damage_CorePrb: {fileID: 5466056050695263600, guid: 52310c898b2cf5d4fbf2dd4f1c56d6b0, type: 3}
   speed_CorePrb: {fileID: 5912493365541557102, guid: 746a9a94d83e8ee4f8e7959a9e62064e, type: 3}
   health_CorePrb: {fileID: 2502225956477501125, guid: fe2a5e2c14409814296c9274e0fdf539, type: 3}
@@ -42670,6 +42794,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1627042273}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1740543042
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1740543043}
+  m_Layer: 0
+  m_Name: DebrisPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1740543043
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740543042}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -7, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 246980971}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1741930091
 GameObject:
   m_ObjectHideFlags: 0
@@ -42682,7 +42837,7 @@ GameObject:
   m_Layer: 0
   m_Name: EliteSkillSpot (2)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -42700,6 +42855,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 368477689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1742619610
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1742619611}
+  m_Layer: 0
+  m_Name: DebrisPoint (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1742619611
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742619610}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 246980971}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1745536394
 GameObject:
@@ -48271,6 +48457,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1824876413
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1824876414}
+  m_Layer: 0
+  m_Name: DebrisPoint (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1824876414
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824876413}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 246980971}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1825060669 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4139158127049306, guid: 55c0623d0fc16d94f9f9c82bd4c1fc43, type: 3}
@@ -49215,6 +49432,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1928055126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1928055127}
+  m_Layer: 0
+  m_Name: DebrisPoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 4162164826716764455, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1928055127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928055126}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -4, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 246980971}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1944621572
 PrefabInstance:
@@ -54589,7 +54837,7 @@ Transform:
   m_GameObject: {fileID: 1991326621}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 90, y: 0, z: 0}
+  m_LocalPosition: {x: 87, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -54602,7 +54850,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1991326621}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -54899,7 +55147,7 @@ Transform:
   m_GameObject: {fileID: 2012058012}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 52.5, y: -3, z: 0}
+  m_LocalPosition: {x: 52.5, y: 1.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -54948,7 +55196,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 26, y: 1}
+  m_Size: {x: 18, y: 10}
   m_EdgeRadius: 0
 --- !u!1001 &2012926944
 PrefabInstance:
@@ -55315,7 +55563,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2034641750}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -56028,6 +56276,7 @@ MonoBehaviour:
   viewHeight_X: 0
   harf_ViewHeaight_Y: 0
   harf_ViewHeaight_X: 0
+  bossCamera: {fileID: 1419251836}
   target:
   - {fileID: 919797040}
   - {fileID: 1699572061}
@@ -56042,7 +56291,13 @@ MonoBehaviour:
   Range_SpawnPoint: []
   Shot_SpawnPoint: []
   Item_SpawnPoint: []
-  Drop_SpawnPoint: []
+  Drop_SpawnPoint:
+  - {fileID: 1740543043}
+  - {fileID: 1928055127}
+  - {fileID: 666708095}
+  - {fileID: 1824876414}
+  - {fileID: 1742619611}
+  - {fileID: 1685470890}
   eliteSpawnPoint: {fileID: 454446677}
   bossSpawnPoint: {fileID: 304392245}
   elite_Border:

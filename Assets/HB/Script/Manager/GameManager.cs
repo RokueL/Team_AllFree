@@ -15,7 +15,11 @@ public class GameManager : MonoBehaviour
     public float harf_ViewHeaight_X;
 
     [Header("상하좌우 카메라 타겟")]
+    public Transform bossCamera;
+
     public Transform[] target;
+    bool touchingCamera;
+    bool smoothCamera;
 
     Vector3 velocity = Vector3.zero;
 
@@ -46,7 +50,6 @@ public class GameManager : MonoBehaviour
     public GameObject eliteMonster_Trigger;
     public GameObject boss_Trigger;
 
-    bool onElite;
 
     [Header("플레이어")]
     public GameObject player;
@@ -57,6 +60,9 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        smoothCamera = false;
+        touchingCamera = false;
+
         delay = 0.01f;  //거리가 0.01까지 타겟지점으로 카메라 이동
         Move_smoothTime = 0.2f; //카메라 속도
 
@@ -77,17 +83,15 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
-        TouchCamera();
-        NextMap();
-
-        if (eliteMonster_Trigger.activeSelf == false)
+        if (touchingCamera)
         {
-            CreateElite();
-            EliteRoom();
-            onElite = true;
+            TouchCamera();
+            NextMap();
         }
-        //else if (boss_Trigger.activeSelf == false)
-        //    BossRoom();
+        if(smoothCamera)
+        {
+            SmoothCamera();
+        }
     }
     //카메라 이동
     void TouchCamera()
@@ -175,6 +179,17 @@ public class GameManager : MonoBehaviour
             }
         }
     }           //다음맵으로 카메라 이동
+    void SmoothCamera()
+    {
+        smoothCamera = true;
+        Vector3 targetPos = new Vector3(player.transform.position.x, player.transform.position.y, -1);
+
+        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, targetPos, 1 * Time.deltaTime) ;   
+    }
+    public void SmoothCameraOn()
+    {
+        Invoke("SmoothCamera", 7f);
+    }
 
     //카메라 흔들기
     public void ShakeCam(float power, float shakeTime)
@@ -226,6 +241,13 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
+    //이펙트
+    public void Ground_Effect(Vector3 target)
+    {
+        GameObject ground_Effect = objectManager.MakeObj("ground_Effect");
+        ground_Effect.transform.position = target;
+    }
+
     //몬스터 및 아이템박스 보스 스폰
     public void CreateBoss()
     {
@@ -241,11 +263,8 @@ public class GameManager : MonoBehaviour
         bossLogic.gameManager = this;
 
     }
-    void CreateElite()
+    public void CreateElite()
     {
-        if (onElite)
-            return;
-
         GameObject elite = objectManager.MakeObj("elite");
         elite.transform.position = eliteSpawnPoint.position;
 
@@ -331,7 +350,10 @@ public class GameManager : MonoBehaviour
             }
 
             GameObject debris = objectManager.MakeObj(type);
+            Debris debrisLogic = debris.GetComponent<Debris>();
             debris.transform.position = Drop_SpawnPoint[ranPoint].position;
+
+            debrisLogic.gameManager = this;
         }
     }
     public void SpawnMouse()
@@ -379,19 +401,30 @@ public class GameManager : MonoBehaviour
     }
 
     //Trigger
-    void BossRoom()
+    public void BossRoom()
     {
+        Camera.main.transform.position = bossCamera.position;
+        touchingCamera = true;
+        smoothCamera = false;
+
         for (int index = 0; index < boss_Border.Length; index++)
         {
             boss_Border[index].enabled = true;
         }
 
     }
-    void EliteRoom()
+    public void OnEliteRoom()
     {
         for (int index = 0; index < elite_Border.Length; index++)
         {
             elite_Border[index].enabled = true;
+        }
+    }
+    public void OffEliteRoom()
+    {
+        for (int index = 0; index < elite_Border.Length; index++)
+        {
+            elite_Border[index].enabled = false;
         }
     }
     //몬스터 다 잡을시 클리어 조건 발생(미구현)

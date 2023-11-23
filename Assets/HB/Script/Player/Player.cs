@@ -10,11 +10,11 @@ public class Player : MonoBehaviour
     int hpDecrease;
 
     //공격 타입
-    public enum Att_Type { Normal,Power,Sharp,Mystic}
+    public enum Att_Type { Normal, Power, Sharp, Mystic }
     public Att_Type type;
 
     //특수 코어
-    public enum Skill_Core {Roll, Summon,DropAttack,Crouch }
+    public enum Skill_Core { Roll, Summon, DropAttack, Crouch }
     public Skill_Core skill_Type;
 
     //플레이어 스테이터스
@@ -59,18 +59,19 @@ public class Player : MonoBehaviour
     bool jumping;
 
     bool isAtt;
+    bool speedUp;
+    bool speedDown;
     bool isCrouch;
 
-    bool onSkill;
-    bool offSkill;
-
-    public bool startSkill;
-    public bool endSkill;
+    public bool OnSkill;
 
     //Trigger
     bool isTouchRoom;       //투명벽 미구현
     public bool isElite;
     public bool isBoss;
+
+    bool OnElite;
+    bool OnBoss;
 
     bool isHit;
 
@@ -85,10 +86,13 @@ public class Player : MonoBehaviour
     Animator anim;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rigid;
-    PlatformEffector2D effector;
 
     void Awake()
     {
+        anim = GetComponent<Animator>();
+        rigid = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         maxLife = 100;
         curLife = 100;
         dmg = 15;
@@ -102,18 +106,14 @@ public class Player : MonoBehaviour
         followCount = 0;
         hpDecrease = 25;
 
-        anim = GetComponent<Animator>();
-        rigid = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        effector = GetComponent<PlatformEffector2D>();
-
+        anim.SetBool("isLieDown", true);
         isNormal = true;
     }
     void Update()
     {
         InPut();
         Input_Skill();
-        SkillOn();
+        CoolDown();
         if (isCameraMove)
             Stop();
         else
@@ -124,6 +124,7 @@ public class Player : MonoBehaviour
         LifeCheck();
         StartCoroutine(Attack());
         StartCoroutine(Skill());
+        StartCoroutine(Summon());
 
         StartCoroutine(Attack_Type());
 
@@ -132,14 +133,14 @@ public class Player : MonoBehaviour
     //플레이어 이동
     void MoveMent()
     {
-        if (!clearMap&& Move_Axis == 1)
+        if (!clearMap && Move_Axis == 1)
         {
             Move_Axis = 0;
         }
-        if (isTouchRoom||isCrouch|| isCameraMove)
+        if (isTouchRoom || isCrouch || isCameraMove || isElite || isBoss)
             Move_Axis = 0;
 
-        rigid.velocity = new Vector2(Move_Axis * speed, rigid.velocity.y);  
+        rigid.velocity = new Vector2(Move_Axis * speed, rigid.velocity.y);
         if (Move_Axis != 0)
         {
             if (Move_Axis > 0)
@@ -167,12 +168,15 @@ public class Player : MonoBehaviour
     //시작 전 동작 불가
     void InPut()
     {
-        if (!isStart||isCrouch|| isCameraMove)
+        if (!isStart || isCrouch || isCameraMove || isElite || isBoss)
+        {
+            rigid.velocity = new Vector2(0, rigid.velocity.y);
             return;
+        }
 
         Move_Axis = Input.GetAxisRaw("Horizontal"); //이동
-        isAtt=Input.GetKeyDown(KeyCode.A);          //공격
-        isJump=Input.GetKeyDown(KeyCode.S);         //점프
+        isAtt = Input.GetKeyDown(KeyCode.A);          //공격
+        isJump = Input.GetKeyDown(KeyCode.S);         //점프
         Q_IsSwitch = Input.GetKeyDown(KeyCode.Q);   //공격 타입 슬롯체인지 노멀->파워->정밀->신비
         E_IsSwitch = Input.GetKeyDown(KeyCode.E);   //공격 타입 슬롯체인지 노멀->신비->정밀->파워
         isCheat = Input.GetKeyDown(KeyCode.L);      //치트키= 체력 100증가
@@ -180,11 +184,13 @@ public class Player : MonoBehaviour
     }
     void Input_Skill()
     {
-        if (!isStart || isCameraMove)
+        if (!isStart || isCameraMove || isBoss || isElite)
             return;
 
-        startSkill = Input.GetKeyDown(KeyCode.D);      //스킬
-        endSkill = Input.GetKeyUp(KeyCode.D);
+        if (!OnSkill)
+            OnSkill = Input.GetKeyDown(KeyCode.D);      //스킬
+        if (Input.GetKeyUp(KeyCode.D))
+            OnSkill = false;
     }
     void Jump()
     {
@@ -200,7 +206,7 @@ public class Player : MonoBehaviour
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             jumping = false;
         }
-        if (isJump&&isGround)
+        if (isJump && isGround)
         {
             anim.SetTrigger("doJump");
             rigid.velocity = new Vector2(rigid.velocity.x, 0f);
@@ -209,13 +215,13 @@ public class Player : MonoBehaviour
             jumping = true;
         }
     }
-    
+
     IEnumerator Attack()
     {
         curAttackDelay += Time.deltaTime;
         if (curAttackDelay < maxAttackDelay)
             yield break;
-        if(isBoss || !isAtt)
+        if (isBoss || !isAtt)
             yield break;
 
         meleeAttack.enabled = true;
@@ -230,122 +236,114 @@ public class Player : MonoBehaviour
     //스킬
     IEnumerator Skill()
     {
-        if (startSkill|| endSkill)
+        switch (skill_Type)
         {
-            switch (skill_Type)
-            {
-                case Skill_Core.Roll:
-                    if (!endSkill)
-                    {
-                        isHit = true;
-                        onSkill = true;
-                        offSkill = false;
-                        Physics2D.IgnoreLayerCollision(6, 7,true);
-                        rollAttack.enabled = true;
+            case Skill_Core.Roll:
+                if (OnSkill)
+                {
+                    isHit = true;
+                    Physics2D.IgnoreLayerCollision(6, 7, true);
+                    rollAttack.enabled = true;
+                    if (!speedUp)
+                        StartCoroutine(RollingSpeedUp());
+                }
+                else
+                {
+                    isHit = false;
+                    Physics2D.IgnoreLayerCollision(6, 7, false);
+                    rollAttack.enabled = false;
+                    if (!speedDown)
+                        StartCoroutine(RollingSpeedDown());
+                }
 
-                        for (int index = 0; index < 10;)
-                        {
-                            yield return new WaitForSeconds(0.15f);
-                            speed = speed+(roll_Speed * 0.1f);
-                            index++;
-                        }
+                break;
+            case Skill_Core.DropAttack:
 
-                        endSkill = false;
-                        startSkill = false;
-                    }
-                    else
-                    {
-                        if (offSkill)
-                            yield break;
-
-                        isHit = false;
-                        onSkill = false;
-                        Physics2D.IgnoreLayerCollision(6, 7, false);
-                        rollAttack.enabled = false;
-
-                        for (int index = 0; index < 10;)
-                        {
-                            yield return new WaitForSeconds(0.1f);
-                            speed = speed - (roll_Speed * 0.1f);
-                            index++;
-                        }
-                        yield return null;
-                        endSkill = false;
-                        startSkill = false;
-                        offSkill = true;
-                    }
-
-                    break;
-
-                case Skill_Core.Summon:
-                    
-                    if (curLife <= hpDecrease || followCount > maxFollowCount||endSkill)
-                        yield break;
-
-                    followCount++;
-                    gameManager.FollowerSpawn();
-                    maxLife -= hpDecrease;
-                    startSkill = false;
-                    yield return null;
-                    break;
-
-                case Skill_Core.DropAttack:
-
-                    break;
-                case Skill_Core.Crouch:
-                    if (!endSkill)
-                    {
-                        isHit = true;
-                        onSkill = true;
-                        isCrouch = true;
-                        offSkill = false;
-                        anim.SetBool("isLieDown", true);
-                        Physics2D.IgnoreLayerCollision(6, 7, true);
-
-                        endSkill = false;
-                        startSkill = false;
-                    }
-                    else
-                    {
-                        if (offSkill)
-                            yield break;
-
-                        isHit = false;
-                        onSkill = false;
-                        isCrouch = false;
-                        anim.SetBool("isLieDown", false);
-                        Physics2D.IgnoreLayerCollision(6, 7, false);
-
-                        yield return null;
-                        endSkill = false;
-                        startSkill = false;
-                        offSkill = true;
-                    }
-                 break;
-            }
+                break;
+            case Skill_Core.Crouch:
+                if (OnSkill)
+                {
+                    isHit = true;
+                    isCrouch = true;
+                    anim.SetBool("isLieDown", true);
+                    Physics2D.IgnoreLayerCollision(6, 7, true);
+                }
+                else
+                {
+                    isHit = false;
+                    isCrouch = false;
+                    anim.SetBool("isLieDown", false);
+                    Physics2D.IgnoreLayerCollision(6, 7, false);
+                }
+                break;
         }
-
         yield return null;
     }
-    void SkillOn()
+    IEnumerator RollingSpeedUp()
     {
-        if (onSkill)
+        if (speed == roll_Speed*1.5f)
+            yield break;
+        if (speed > roll_Speed * 1.5f)
+            speed = roll_Speed * 1.5f;
+
+        speedUp = true;
+        yield return new WaitForSeconds(0.15f);
+
+        speed = speed + (roll_Speed * 0.1f);
+        speedUp = false;
+    }
+    IEnumerator RollingSpeedDown()
+    {
+        if (speed == roll_Speed)
+            yield break;
+        if (speed < roll_Speed)
+            speed = roll_Speed;
+
+        speedDown = true;
+        yield return new WaitForSeconds(0.1f);
+
+        speed = speed - (roll_Speed * 0.1f);
+        speedDown = false;
+    }
+    IEnumerator Summon()
+    {
+        if(skill_Type!=Skill_Core.Summon)
+            yield break;
+
+        if (curLife <= hpDecrease || followCount > maxFollowCount)
+        yield break;
+
+        followCount++;
+        gameManager.FollowerSpawn();
+        maxLife -= hpDecrease;
+        yield return null;
+    }
+
+
+    void CoolDown()
+    {
+        if (!isStart)
+            return;
+
+        if (OnSkill)
         {
             curSkillDelay += Time.deltaTime;
 
             if (curSkillDelay > maxSkillDelay)
             {
-                SkillOff();
                 curSkillDelay = 0;
+                OnCoolDown();
+
             }
         }
         else
             curSkillDelay = 0;
     }
-    void SkillOff()
+    void OnCoolDown()
     {
-        endSkill = true;
+        OnSkill = false;
     }
+
     //체력 확인
     void LifeCheck()
     {
@@ -385,7 +383,7 @@ public class Player : MonoBehaviour
 
             Q_IsSwitch = false;
         }
-        if(E_IsSwitch)
+        if (E_IsSwitch)
         {
             switch (type)
             {
@@ -455,27 +453,38 @@ public class Player : MonoBehaviour
     }
     void ReturnSprite(float Alpha)
     {
-        spriteRenderer.color = new Color(0.4f, 0.4f, 0.4f, Alpha);
+        spriteRenderer.color = new Color(1, 1, 1, Alpha);
     }
     //보스 시작 트리거
     IEnumerator EliteStart()
     {
         isElite = true;
-        yield return new WaitForSeconds(0.2f);
+        spriteRenderer.flipX = false;
+        if (!OnElite)
+        {
+            gameManager.CreateElite();
+            gameManager.OnEliteRoom();
+        }
+        OnElite = true;
+        yield return new WaitForSeconds(2f);
 
         isElite = false;
     }
     IEnumerator BossStart()
     {
-        isElite = true;
-        yield return new WaitForSeconds(0.2f);
+        isBoss = true;
+        spriteRenderer.flipX = false;
+        if (!OnBoss)
+            gameManager.BossRoom();
+        OnBoss = true;
+        yield return new WaitForSeconds(4f);
 
-        isElite = false;
+        isBoss = false;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag=="Enemy")
+        if (collision.gameObject.tag == "Enemy")
         {
             Enemy enemyLogic = collision.gameObject.GetComponentInParent<Enemy>();
 
@@ -510,7 +519,7 @@ public class Player : MonoBehaviour
             collision.gameObject.SetActive(false);
         }
         //Ground
-        if(collision.gameObject.tag=="Ground")
+        if (collision.gameObject.tag == "Ground")
         {
             rigid.velocity = new Vector2(rigid.velocity.x, 0);
         }
@@ -538,7 +547,7 @@ public class Player : MonoBehaviour
         }
         if (collision.gameObject.tag == "Boss")
         {
-            Boss bossLogic =collision.gameObject.GetComponentInParent<Boss>();
+            Boss bossLogic = collision.gameObject.GetComponentInParent<Boss>();
 
             StartCoroutine(OnHit(bossLogic.dmg));
         }
@@ -548,11 +557,11 @@ public class Player : MonoBehaviour
 
             StartCoroutine(OnHit(eliteLogic.dmg));
         }
-        if (collision.gameObject.tag=="TriggerMap")
+        if (collision.gameObject.tag == "TriggerMap")
         {
             isTouchRoom = true;
         }
-        if(collision.gameObject.tag=="BossTrigger"&&collision.gameObject.name=="EliteTrigger")
+        if (collision.gameObject.tag == "BossTrigger" && collision.gameObject.name == "EliteTrigger")
         {
             StartCoroutine(EliteStart());
             collision.gameObject.SetActive(false);
@@ -562,7 +571,7 @@ public class Player : MonoBehaviour
             StartCoroutine(BossStart());
             collision.gameObject.SetActive(false);
         }
-        if (collision.gameObject.tag=="Debris")
+        if (collision.gameObject.tag == "Debris")
         {
             Debris debrisLogic = collision.gameObject.GetComponent<Debris>();
             collision.gameObject.SetActive(false);

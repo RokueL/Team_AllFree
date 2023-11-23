@@ -8,12 +8,16 @@ public class EliteEnemy : Enemy
     public Enemy enemyScript;
 
     float frontPos;
+    float deathHitCount;
 
     float curSkillDelay;
     float maxSkillDelay;
 
     bool isStart;
     bool isSkill;
+
+    bool StateCore;
+    bool SkillCore;
 
     public BoxCollider2D attack;
     public BoxCollider2D double_Attack;
@@ -27,10 +31,10 @@ public class EliteEnemy : Enemy
         anim = GetComponent<Animator>();
 
         speed = 1.5f;
-        maxSkillDelay = 6f;
+        maxSkillDelay = 10f;
 
         forward = new Vector2(speed, rigid.velocity.y).normalized;
-        maxAttackDelay = Random.Range(1.5f, 3f);
+        maxAttackDelay = Random.Range(1f, 1.5f);
     }
     //체력설정
 
@@ -98,19 +102,21 @@ public class EliteEnemy : Enemy
     IEnumerator EliteStart()
     {
         Physics2D.IgnoreLayerCollision(8, 9, true);
-        yield return new WaitForSeconds(1.1f);
+        yield return new WaitForSeconds(0.8f);
 
-        gameManager.ShakeCam(1f,0.6f);
-        yield return new WaitForSeconds(1f);
+        gameManager.ShakeCam(1f,0.4f);
+        yield return new WaitForSeconds(0.5f);
 
         Physics2D.IgnoreLayerCollision(8, 9, false);
         anim.SetTrigger("doDoubleAttack");
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         isStart = true;
 
     }
     void MoveAnim()
     {
+        if (isDie)
+            return;
         if (rigid.velocity == Vector2.zero)
         {
             anim.SetBool("isMove", false);
@@ -127,22 +133,22 @@ public class EliteEnemy : Enemy
     }
     void Follow()
     {
-        if (player.transform.position.x - transform.position.x < -2)
+        if (player.transform.position.x - transform.position.x < -1.5f)
         {
             frontPos = -speed;
             spriteRenderer.flipX = false;
         }
-        else if (player.transform.position.x - transform.position.x >= 2)
+        else if (player.transform.position.x - transform.position.x >= 1.5f)
         {
             frontPos = speed;
             spriteRenderer.flipX = true;
         }
-        else if (player.transform.position.x - transform.position.x >= -2&& player.transform.position.x - transform.position.x <= 0)
+        else if (player.transform.position.x - transform.position.x >= -1.5f && player.transform.position.x - transform.position.x <= 0)
         {
             frontPos = speed;
             spriteRenderer.flipX = false;
         }
-        else if (player.transform.position.x - transform.position.x < 2&& player.transform.position.x - transform.position.x > 0)
+        else if (player.transform.position.x - transform.position.x < 1.5f && player.transform.position.x - transform.position.x > 0)
         {
             frontPos = -speed;
             spriteRenderer.flipX = true;
@@ -203,7 +209,7 @@ public class EliteEnemy : Enemy
 
                 attack.enabled = true;
                 anim.SetTrigger("doAttack");
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.5f);
 
                 isAttack = false;
                 attack.enabled = false;
@@ -217,7 +223,7 @@ public class EliteEnemy : Enemy
 
                 double_Attack.enabled = true;
                 anim.SetTrigger("doDoubleAttack");
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.5f);
 
                 isAttack = false;
                 double_Attack.enabled = false;
@@ -234,17 +240,93 @@ public class EliteEnemy : Enemy
         isHit = true;
 
         DamageLogic(dmg);
-        ReturnSprite(1f);
+        ReturnSprite(0.5f);
 
-        if (health < 0)
+        if (health <= 0)
         {
-            isDie = true;
-            //anim.SetTrigger("doDead");
-            ReturnSprite(0.5f);
-            yield return new WaitForSeconds(1f);
+            //Dead Animation
+            if (!isDie)
+            {
+                anim.SetTrigger("doDie");
+                isDie = true;
+                yield return new WaitForSeconds(2.2f);
+            }
+            ReturnSprite(0.3f);
+            deathHitCount++;
 
-            gameObject.SetActive(false);
-            gameManager.CreateBoss();
+            yield return new WaitForSeconds(0.2f);
+
+            isHit = false;
+            //Item
+            Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
+            int num = 3;
+            if (StateCore||SkillCore)
+                num = 2;
+            if (StateCore && SkillCore)
+                num = 1;
+
+            int ranItem = Random.Range(0, num);
+            string itemType=null;
+            if ((deathHitCount == 3 || deathHitCount == 4) && !SkillCore)
+                ranItem = 1;
+            if ((deathHitCount == 3 || deathHitCount == 4) && !StateCore)
+                ranItem = 2;
+
+            switch (ranItem)
+            {
+                case 0:
+                    itemType = "gold";
+                    break;
+                case 1:
+                    int ranSkillCore = Random.Range(0, 3);
+                    SkillCore = true;
+                    switch (ranSkillCore)
+                    {
+                        case 0:
+                            itemType = "coreA";
+                            break;
+                        case 1:
+                            itemType = "coreB";
+                            break;
+                        case 2:
+                            itemType = "coreC";
+                            break;
+                    }
+                    break;
+                case 2:
+                    int ranstateCore = Random.Range(0, 3);
+                    StateCore = true;
+                    switch (ranstateCore)
+                    {
+                        case 0:
+                            itemType = "damage_Core";
+                            break;
+                        case 1:
+                            itemType = "speed_Core";
+                            break;
+                        case 2:
+                            itemType = "health_Core";
+                            break;
+                    }
+                    break;
+            }
+            if (deathHitCount <= 4)
+            {
+                GameObject Item = objectManager.MakeObj(itemType);
+                Item.transform.position = transform.position;
+
+                Rigidbody2D Item_Rigid = Item.GetComponent<Rigidbody2D>();
+                Item_Rigid.AddForce(ranVec * 2 + Vector2.up * 8, ForceMode2D.Impulse);
+            }
+            if (deathHitCount == 4)
+            {
+                gameObject.SetActive(false);
+                gameManager.CreateBoss();
+                gameManager.OffEliteRoom();
+                yield break;
+            }
+            else
+                yield break;
         }
         yield return new WaitForSeconds(0.1f);
 
@@ -261,7 +343,10 @@ public class EliteEnemy : Enemy
         Physics2D.IgnoreLayerCollision(3, 8, true);
         spriteRenderer.sortingOrder = 0;
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(0.4f);
+        spriteRenderer.color = new Color(1, 1, 1, 0);
+
+        yield return new WaitForSeconds(1f);
 
         int ranPoint = Random.Range(0, point.Length);
         transform.position = point[ranPoint].position;
@@ -269,8 +354,10 @@ public class EliteEnemy : Enemy
         dig.enabled = true;
         rigid.velocity = Vector2.zero;
         rigid.AddForce(Vector2.up * 40, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(0.1f);
 
-        yield return new WaitForSeconds(1f);
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+        yield return new WaitForSeconds(0.4f);
 
         Physics2D.IgnoreLayerCollision(3, 8, false);
         rigid.gravityScale = 3;
@@ -280,7 +367,7 @@ public class EliteEnemy : Enemy
 
     void ReturnSprite(float Alpha)
     {
-        spriteRenderer.color = new Color(0.4f, 0.4f, 0.4f, Alpha);
+        spriteRenderer.color = new Color(1f, 1f, 1f, Alpha);
     }
     void OnTriggerEnter2D(Collider2D collision)
     {

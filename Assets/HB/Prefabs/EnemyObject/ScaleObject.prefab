@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2198509108775654012}
   - component: {fileID: 2483419417075507858}
-  - component: {fileID: 3684060506609022653}
   - component: {fileID: -5472121056054629864}
   - component: {fileID: -1170392038528830065}
+  - component: {fileID: 6302569846379732324}
   m_Layer: 10
   m_Name: ScaleObject
   m_TagString: BossAttack
@@ -87,38 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3684060506609022653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4372927490793146883}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8feb51a5cc3fa74f90f353af01baad8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  level: 0
-  enemyType: 0
-  type: 0
-  maxdistance: 0
-  mindistance: 0
-  speed: 0
-  curAttackDelay: 0
-  maxAttackDelay: 0
-  curAggroTime: 0
-  maxAggroTime: 0
-  dmg: 0
-  nextMove: 0
-  player: {fileID: 0}
-  objectManager: {fileID: 0}
-  gameManager: {fileID: 0}
-  rigid: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  anim: {fileID: 0}
-  forward: {x: 0, y: 0}
-  enemyScript: {fileID: 0}
 --- !u!50 &-5472121056054629864
 Rigidbody2D:
   serializedVersion: 4
@@ -181,3 +149,32 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 0.3}
   m_Direction: 1
+--- !u!114 &6302569846379732324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4372927490793146883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1003679ce9ee59240bdaa414b4e3d66d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level: 0
+  enemyType: 0
+  type: 0
+  maxdistance: 0
+  mindistance: 0
+  dmg: 12
+  health: 0
+  maxHealth: 0
+  player: {fileID: 0}
+  objectManager: {fileID: 0}
+  gameManager: {fileID: 0}
+  rigid: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  anim: {fileID: 0}
+  forward: {x: 0, y: 0}
+  Att_type: 1
+  enemyScript: {fileID: 0}

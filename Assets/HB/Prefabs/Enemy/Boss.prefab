@@ -263,9 +263,8 @@ MonoBehaviour:
   PatternDelay: 0
   curShotDelay: 0
   maxShotDelay: 0
-  isStart: 0
   rageState: 0
-  Rolling: {fileID: 0}
+  Rolling: {fileID: 7476180058228774067}
   enemyScript: {fileID: 0}
   Trigger: {fileID: 0}
 --- !u!95 &8175773494483863758

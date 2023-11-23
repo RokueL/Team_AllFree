@@ -36,7 +36,8 @@ public class Boss : Enemy
     int scaleCount;
     bool isScalesFire;
 
-    public bool isStart;
+    bool isStart;
+    bool isAppear;
     public bool rageState;
 
     public CircleCollider2D Rolling;
@@ -45,14 +46,16 @@ public class Boss : Enemy
     
     void Awake()
     {
+        PatternDelay = 1.5f;
+
         normalScatchRatio = 7;
         rageScatchRatio = 4;
         rageRollingRatio = 7;
         doReadyRoll = 5;
 
         rollingSpeed = 25;
-
-
+        speed = 1;
+        maxShotDelay = 0.5f;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -63,8 +66,8 @@ public class Boss : Enemy
     }
     void FixedUpdate()
     {
-        if (Trigger.activeSelf == false)
-            Appear();
+        if (Trigger.activeSelf == false&&!isAppear)
+            StartCoroutine(Appear());
 
         if (!isDie)
         {
@@ -97,9 +100,18 @@ public class Boss : Enemy
     }
 
     //Start Setting
-    public void Appear()
+    public IEnumerator Appear()
     {
+        isAppear = true;
+        anim.SetTrigger("Roar");
+        gameManager.ShakeCam(1f,1f);
+        yield return new WaitForSeconds(1f);
+
+        gameManager.DropDebris();
+        yield return new WaitForSeconds(2f);
+
         isStart = true;
+
         StartCoroutine(Think());
     }
     IEnumerator LevelCheck()
@@ -124,10 +136,10 @@ public class Boss : Enemy
         switch (level)
         {
             case Level.Easy:
-                health = 100;
-                maxHealth = 100;
+                health = 300;
+                maxHealth = 300;
                 dmg = 15;
-                rageGage = 30;
+                rageGage = 70;
                 scaleCount = 5;
                 break;
 
@@ -136,8 +148,8 @@ public class Boss : Enemy
                 break;
 
             case Level.Hard:
-                health = 100;
-                maxHealth = 100;
+                health = 300;
+                maxHealth = 300;
                 dmg = 20;
                 rageGage = 30;
                 scaleCount = 9;
@@ -186,7 +198,7 @@ public class Boss : Enemy
     }
     IEnumerator Think()
     {
-        if(isDie)
+        if (isDie)
             yield break;
 
         isAttack = false;
@@ -209,11 +221,11 @@ public class Boss : Enemy
         RandomPattern();
         switch(patternIndex)
         {
-            case 0:     //Scratch&ReThink
+            case 0:     //Roar&ReThink
                 if(dist<5)
                 {
                     yield return new WaitForSeconds(PatternDelay);
-                    StartCoroutine(ScratchAttack());
+                    StartCoroutine(RoarAttack());
                 }
                 else
                 {
@@ -268,19 +280,13 @@ public class Boss : Enemy
     }
 
     //Scratch Attack
-    IEnumerator ScratchAttack()
+    IEnumerator RoarAttack()
     {
         isAttack = true;
         anim.SetBool("isWalk", false);
         yield return null;
 
-        GameObject scratch = objectManager.MakeObj("bossAAttack_0");
-        BossAttackObject scratchLogic = scratch.GetComponent<BossAttackObject>();
-        scratchLogic.enemyScript = enemyScript;
-        scratchLogic.dmg = dmg;
-        scratchLogic.Att_type = BossAttackObject.Attack_Type.Melee;
-
-        scratch.transform.position = transform.position + Vector3.right * frontPos*2+Vector3.down*0.2f;
+        anim.SetTrigger("Roar");
 
         yield return new WaitForSeconds(PatternDelay);
         StartCoroutine(Think());

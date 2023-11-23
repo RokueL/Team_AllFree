@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
+    [Header("파티클")]
+    public GameObject ground_EffectPrb;
+
     [Header("팔로우캣&텔레포트 파티클")]
     public GameObject followCatPrb;
     public GameObject teleportPrb;
@@ -41,6 +44,8 @@ public class ObjectManager : MonoBehaviour
     public GameObject damage_CorePrb;
     public GameObject speed_CorePrb;
     public GameObject health_CorePrb;
+
+    GameObject[] ground_Effect;
 
     GameObject[] followCat;
     GameObject[] teleport;
@@ -84,13 +89,15 @@ public class ObjectManager : MonoBehaviour
 
     void Awake()
     {
+        ground_Effect = new GameObject[25];
+
         followCat = new GameObject[10];
         teleport = new GameObject[10];
 
         snakeAttack = new GameObject[15];
         flowerAttack = new GameObject[30];
 
-        bossAAttack_1 = new GameObject[30];
+        bossAAttack_1 = new GameObject[100];
 
         debrisA = new GameObject[20];
         debrisB= new GameObject[20];
@@ -120,6 +127,11 @@ public class ObjectManager : MonoBehaviour
     }
     void Generate()
     {
+        for (int index = 0; index < ground_Effect.Length; index++)
+        {
+            ground_Effect[index] = Instantiate(ground_EffectPrb);
+            ground_Effect[index].SetActive(false);
+        } 
         for (int index = 0; index < followCat.Length; index++)
         {
             followCat[index] = Instantiate(followCatPrb);
@@ -244,6 +256,10 @@ public class ObjectManager : MonoBehaviour
     {
         switch(type)
         {
+            case "ground_Effect":
+                targetPool = ground_Effect;
+                break;  
+
             case "followCat":
                 targetPool = followCat;
                 break; 

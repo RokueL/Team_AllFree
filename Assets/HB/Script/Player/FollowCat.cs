@@ -14,6 +14,7 @@ public class FollowCat : MonoBehaviour
     float jumpPower;
     float curAttackDelay;
     float maxAttackDelay;
+    public float startAttackDelay;
     float jumpDelay;
 
     float distance;
@@ -62,16 +63,25 @@ public class FollowCat : MonoBehaviour
             case 1:
                 followDelay = 15;
                 speed = 3f;
-                break;
+                startAttackDelay = 0.3f;
 
+                break;
             case 2:
                 followDelay = 20;
                 speed = 2f;
-                break;
+                startAttackDelay = 0.5f;
 
+                break;
             case 3:
                 followDelay = 25;
                 speed = 2f;
+                startAttackDelay = 0.7f;
+
+                break;
+            default:
+                followDelay = 15;
+                speed = 3f;
+                startAttackDelay = 0.3f;
                 break;
         }
     }
@@ -161,6 +171,8 @@ public class FollowCat : MonoBehaviour
             yield break;
         if (!isAtt)
             yield break;
+
+        yield return new WaitForSeconds(startAttackDelay);
 
         attack.enabled = true;
         Followanim.SetTrigger("doAttack");
