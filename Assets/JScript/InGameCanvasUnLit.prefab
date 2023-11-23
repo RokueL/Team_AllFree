@@ -1038,12 +1038,12 @@ GameObject:
   - component: {fileID: 4447612283136369975}
   - component: {fileID: 1999203834913198972}
   m_Layer: 17
-  m_Name: MainCanvasUnLit
+  m_Name: InGameCanvasUnLit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2537314108756710197
 RectTransform:
   m_ObjectHideFlags: 0
