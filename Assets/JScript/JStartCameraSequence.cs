@@ -22,7 +22,7 @@ public class JStartCameraSequence : MonoBehaviour
     /// <summary> [이벤트 ] 카메라 이벤트 호출 </summary>
     public void OnCameraSequenceEvent()
     {
-        Invoke("StartCamera",1f);
+        Invoke("StartCamera",2f);
         Invoke("PlayerStartMove",7f);
     }
 
