@@ -93,7 +93,7 @@ public class Enemy : MonoBehaviour
         switch (type)
         {
             case Def_Type.Normal:
-                switch (playerLogic.type)
+                switch (playerLogic.att_Type)
                 {
                     case Player.Att_Type.Normal:
                         health -= dmg;
@@ -110,7 +110,7 @@ public class Enemy : MonoBehaviour
                 }
                 break;
             case Def_Type.Nimble:
-                switch (playerLogic.type)
+                switch (playerLogic.att_Type)
                 {
                     case Player.Att_Type.Normal:
                         health = health - (dmg * 0.5f);
@@ -127,7 +127,7 @@ public class Enemy : MonoBehaviour
                 }
                 break;
             case Def_Type.Resist:
-                switch (playerLogic.type)
+                switch (playerLogic.att_Type)
                 {
                     case Player.Att_Type.Normal:
                         health = health - (dmg * 0.5f);
@@ -144,7 +144,7 @@ public class Enemy : MonoBehaviour
                 }
                 break;
             case Def_Type.Solid:
-                switch (playerLogic.type)
+                switch (playerLogic.att_Type)
                 {
                     case Player.Att_Type.Normal:
                         health = health - (dmg * 0.5f);

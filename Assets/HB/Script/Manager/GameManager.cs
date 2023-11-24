@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
     //ShakeCamera
     Vector3 myVec;
 
+    public List<CoreInf> coreInformation;
+    public int StateCoreIndex;
 
     [Header("[스폰 지점]엘리트 몬스터 스킬")]
     public Transform[] eliteSkill_Spot;
@@ -60,6 +62,9 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        coreInformation = new List<CoreInf>();
+        StateCoreIndex = 0;
+
         smoothCamera = false;
         touchingCamera = false;
 
@@ -239,6 +244,32 @@ public class GameManager : MonoBehaviour
     public void GameQuit()
     {
         Application.Quit();
+    }
+
+    public void StateCore_Increase()
+    {
+        CoreInf coreInfo = new CoreInf();
+
+        coreInfo.increaseDamage = Random.Range(10, 21);
+        coreInfo.increaseHealth = Random.Range(30, 51);
+
+        coreInformation.Add(coreInfo);
+
+        PrintInfo();
+        StateCoreIndex++;
+    }
+    public void PrintInfo()
+    {
+        Debug.Log($"스탯코어[{StateCoreIndex+1}] 현재 갯수:"+ (StateCoreIndex+1));
+        Debug.Log($"스탯코어[{StateCoreIndex}] +공격력 능력치:" + coreInformation[StateCoreIndex].increaseDamage);
+        Debug.Log($"스탯코어[{StateCoreIndex}] +체력 능력치:" + coreInformation[StateCoreIndex].increaseHealth);
+    }
+    public void EquipCore()
+    {
+        Player playerLogic = player.GetComponent<Player>();
+        if (playerLogic.equipCount == 3)
+            return;
+
     }
 
     //이펙트
@@ -427,6 +458,7 @@ public class GameManager : MonoBehaviour
             elite_Border[index].enabled = false;
         }
     }
+
     //몬스터 다 잡을시 클리어 조건 발생(미구현)
     public void MonsterKillCheck()
     {

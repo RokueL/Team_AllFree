@@ -42,26 +42,7 @@ public class EliteEnemy : Enemy
     {
         StartCoroutine(LevelCheck());
         StartCoroutine(EliteStart());
-    }
-    void FixedUpdate()
-    {
-        dist = Vector2.Distance(player.transform.position, transform.position);
-        MoveAnim();
-        WatchCheck();
-        Follow();
-        Move();
-        Think();
-        //GroundCheck();
-        if (isDie || isAttack || !isStart||isSkill)
-            rigid.velocity = new Vector2(0,rigid.velocity.y);
-
-        if (curSkillDelay > maxSkillDelay)
-        {
-            StartCoroutine (Skill());
-            curSkillDelay = 0;
-        }
-    }
-
+    } 
     //Start Setting
     IEnumerator LevelCheck()
     {
@@ -98,7 +79,29 @@ public class EliteEnemy : Enemy
                 break;
         }
     }
+    void FixedUpdate()
+    {
+        dist = Vector2.Distance(player.transform.position, transform.position);
+        MoveAnim();
+        WatchCheck();
+        Follow();
+        Move();
+        Think();
+        //GroundCheck();
+        if (isDie || isAttack || !isStart||isSkill)
+            rigid.velocity = new Vector2(0,rigid.velocity.y);
 
+        if (curSkillDelay > maxSkillDelay)
+        {
+            StartCoroutine (Skill());
+            curSkillDelay = 0;
+        }
+        if(isDie)
+        {
+            StopCoroutine(Skill());
+            StopCoroutine(Attack());
+        }
+    }
     IEnumerator EliteStart()
     {
         Physics2D.IgnoreLayerCollision(8, 9, true);
@@ -232,6 +235,38 @@ public class EliteEnemy : Enemy
                 break;
         }
     }
+    IEnumerator Skill()
+    {
+        isSkill = true;
+        yield return null;
+
+        rigid.gravityScale = 10;
+        rigid.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
+        Physics2D.IgnoreLayerCollision(3, 8, true);
+        spriteRenderer.sortingOrder = 0;
+
+        yield return new WaitForSeconds(0.4f);
+        spriteRenderer.color = new Color(1, 1, 1, 0);
+
+        yield return new WaitForSeconds(1f);
+
+        int ranPoint = Random.Range(0, point.Length);
+        transform.position = point[ranPoint].position;
+
+        dig.enabled = true;
+        rigid.velocity = Vector2.zero;
+        rigid.AddForce(Vector2.up * 40, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(0.1f);
+
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+        yield return new WaitForSeconds(0.4f);
+
+        Physics2D.IgnoreLayerCollision(3, 8, false);
+        rigid.gravityScale = 3;
+        dig.enabled = false;
+        isSkill = false;
+    }
+
     IEnumerator OnHit(float dmg)
     {
         if (isHit)
@@ -249,7 +284,7 @@ public class EliteEnemy : Enemy
             {
                 anim.SetTrigger("doDie");
                 isDie = true;
-                yield return new WaitForSeconds(2.2f);
+                yield return new WaitForSeconds(0.8f);
             }
             ReturnSprite(0.3f);
             deathHitCount++;
@@ -283,31 +318,19 @@ public class EliteEnemy : Enemy
                     switch (ranSkillCore)
                     {
                         case 0:
-                            itemType = "coreA";
+                            itemType = "rollCore";
                             break;
                         case 1:
-                            itemType = "coreB";
+                            itemType = "summonCore";
                             break;
                         case 2:
-                            itemType = "coreC";
+                            itemType = "dropCore";
                             break;
                     }
                     break;
                 case 2:
-                    int ranstateCore = Random.Range(0, 3);
                     StateCore = true;
-                    switch (ranstateCore)
-                    {
-                        case 0:
-                            itemType = "damage_Core";
-                            break;
-                        case 1:
-                            itemType = "speed_Core";
-                            break;
-                        case 2:
-                            itemType = "health_Core";
-                            break;
-                    }
+                    itemType = "stateCore";
                     break;
             }
             if (deathHitCount <= 4)
@@ -333,38 +356,6 @@ public class EliteEnemy : Enemy
         isHit = false;
         ReturnSprite(1f);
     }
-    IEnumerator Skill()
-    {
-        isSkill = true;
-        yield return null;
-
-        rigid.gravityScale = 10;
-        rigid.AddForce(Vector2.up * 20,ForceMode2D.Impulse);
-        Physics2D.IgnoreLayerCollision(3, 8, true);
-        spriteRenderer.sortingOrder = 0;
-
-        yield return new WaitForSeconds(0.4f);
-        spriteRenderer.color = new Color(1, 1, 1, 0);
-
-        yield return new WaitForSeconds(1f);
-
-        int ranPoint = Random.Range(0, point.Length);
-        transform.position = point[ranPoint].position;
-
-        dig.enabled = true;
-        rigid.velocity = Vector2.zero;
-        rigid.AddForce(Vector2.up * 40, ForceMode2D.Impulse);
-        yield return new WaitForSeconds(0.1f);
-
-        spriteRenderer.color = new Color(1, 1, 1, 1);
-        yield return new WaitForSeconds(0.4f);
-
-        Physics2D.IgnoreLayerCollision(3, 8, false);
-        rigid.gravityScale = 3;
-        dig.enabled = false;
-        isSkill = false;
-    }
-
     void ReturnSprite(float Alpha)
     {
         spriteRenderer.color = new Color(1f, 1f, 1f, Alpha);

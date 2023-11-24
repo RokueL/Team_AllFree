@@ -54,6 +54,10 @@ public class JCanvas : MonoBehaviour
     [Header("창 세팅")]
     public GameObject SettingWindow;
 
+    /// <summary> [게임 오브젝트] 플레이어 </summary>
+    [Header("[게임 오브젝트] 플레이어")]
+    public GameObject Player;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,7 +67,7 @@ public class JCanvas : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape)&& Player.GetComponent<Player>().isStart)
         {
             if (!isOpen)
             {

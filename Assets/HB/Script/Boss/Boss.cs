@@ -15,6 +15,9 @@ public class Boss : Enemy
 
     float frontPos;
 
+    bool StateCore;
+    bool SkillCore;
+
     //BossA
     public float rollingSpeed;
     public float PatternDelay;
@@ -41,12 +44,13 @@ public class Boss : Enemy
     public bool rageState;
 
     public CircleCollider2D Rolling;
+    public BoxCollider2D EarthQuake;
     public Enemy enemyScript;
     public GameObject Trigger;
     
     void Awake()
     {
-        PatternDelay = 1.5f;
+        PatternDelay = 1.45f;
 
         normalScatchRatio = 7;
         rageScatchRatio = 4;
@@ -56,6 +60,8 @@ public class Boss : Enemy
         rollingSpeed = 25;
         speed = 1;
         maxShotDelay = 0.5f;
+
+        type = Def_Type.Resist;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -136,8 +142,8 @@ public class Boss : Enemy
         switch (level)
         {
             case Level.Easy:
-                health = 300;
-                maxHealth = 300;
+                health = 1000;
+                maxHealth = 1000;
                 dmg = 15;
                 rageGage = 70;
                 scaleCount = 5;
@@ -296,6 +302,9 @@ public class Boss : Enemy
     IEnumerator JumpAttack()
     {
         isAttack = true;
+        float Quakedmg=15;
+        float curdmg=dmg;
+        dmg = Quakedmg;
         yield return new WaitForSeconds(1f);
 
         anim.SetTrigger("doJump");
@@ -305,7 +314,12 @@ public class Boss : Enemy
 
         anim.SetTrigger("doLand");
         gameManager.DropDebris();
+        gameManager.ShakeCam(1f,1f);
+        EarthQuake.enabled = true;
+        yield return null;
 
+        EarthQuake.enabled = false;
+        dmg = curdmg;
         StartCoroutine(Think());
     }
 
@@ -333,7 +347,7 @@ public class Boss : Enemy
                     Mathf.Sin(Mathf.PI * index / (scaleCount - 1)));
 
                 S_rigid.transform.Rotate(Vector3.forward * index * 45);
-                S_rigid.AddForce(dirVec * 5, ForceMode2D.Impulse);
+                S_rigid.AddForce(dirVec * 12, ForceMode2D.Impulse);
             }
         }
         curShotDelay = 0;
@@ -345,7 +359,7 @@ public class Boss : Enemy
         isScalesFire = true;
         isAttack = false;
         rageState = true;
-        PatternDelay = 1.2f;
+        PatternDelay = 1.3f;
         speed *= 1.25f ;
     }
 
@@ -372,8 +386,10 @@ public class Boss : Enemy
         if (health > 0)
         {
             isHit = true;
-            DamageLogic(dmg);
-
+            if(!rageState)
+                DamageLogic(dmg);
+            else if(rageState)
+                DamageLogic(dmg*2);
             ReturnSprite(0.4f);
 
             //Rolling Animation
@@ -402,48 +418,62 @@ public class Boss : Enemy
 
             isHit = false;
             //Item
-            for (int index = 0; index < 5; index++)
+            Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
+            int num = 3;
+            if (StateCore || SkillCore)
+                num = 2;
+            if (StateCore && SkillCore)
+                num = 1;
+
+            int ranItem = Random.Range(0, num);
+            string itemType = null;
+            if ((deathHitCount == 3 || deathHitCount == 4) && !SkillCore)
+                ranItem = 1;
+            if ((deathHitCount == 3 || deathHitCount == 4) && !StateCore)
+                ranItem = 2;
+
+            switch (ranItem)
             {
-                Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
-                if (deathHitCount < 2)
-                {
-                    GameObject b_Coin = objectManager.MakeObj("bronze");
-                    b_Coin.transform.position = transform.position;
-
-                    Rigidbody2D b_Rigid = b_Coin.GetComponent<Rigidbody2D>();
-                    b_Rigid.AddForce(ranVec * 2 + Vector2.up * 8, ForceMode2D.Impulse);
-                }
-                else if (deathHitCount < 3)
-                {
-                    GameObject s_Coin = objectManager.MakeObj("silver");
-                    s_Coin.transform.position = transform.position;
-
-                    Rigidbody2D s_Rigid = s_Coin.GetComponent<Rigidbody2D>();
-                    s_Rigid.AddForce(ranVec * 2 + Vector2.up * 8, ForceMode2D.Impulse);
-                }
-                else if (deathHitCount < 4)
-                {
-                    GameObject g_Coin = objectManager.MakeObj("gold");
-                    g_Coin.transform.position = transform.position;
-
-                    Rigidbody2D g_Rigid = g_Coin.GetComponent<Rigidbody2D>();
-                    g_Rigid.AddForce(ranVec * 2 + Vector2.up * 8, ForceMode2D.Impulse);
-                }
-                else if(deathHitCount==4)
-                {
-                    GameObject coreA = objectManager.MakeObj("coreA");
-                    coreA.transform.position = transform.position;
-
-                    Rigidbody2D rigid = coreA.GetComponent<Rigidbody2D>();
-                    rigid.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
-                    yield return new WaitForSeconds(2.2f);
-
-                    gameObject.SetActive(false);
-                    yield break;
-                }
-                else
-                    yield break;
+                case 0:
+                    itemType = "gold";
+                    break;
+                case 1:
+                    int ranSkillCore = Random.Range(0, 3);
+                    SkillCore = true;
+                    switch (ranSkillCore)
+                    {
+                        case 0:
+                            itemType = "rollCore";
+                            break;
+                        case 1:
+                            itemType = "summonCore";
+                            break;
+                        case 2:
+                            itemType = "dropCore";
+                            break;
+                    }
+                    break;
+                case 2:
+                    StateCore = true;
+                    itemType = "stateCore";
+                    break;
             }
+            if (deathHitCount <= 4)
+            {
+                GameObject Item = objectManager.MakeObj(itemType);
+                Item.transform.position = transform.position;
+
+                Rigidbody2D Item_Rigid = Item.GetComponent<Rigidbody2D>();
+                Item_Rigid.AddForce(ranVec * 2 + Vector2.up * 8, ForceMode2D.Impulse);
+            }
+            if (deathHitCount == 4)
+            {
+                gameObject.SetActive(false);
+
+                yield break;
+            }
+            else
+                yield break;
         }
     }
     void ReturnSprite(float Alpha)
@@ -488,6 +518,12 @@ public class Boss : Enemy
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg));
+
+        }
+        if (collision.gameObject.tag == "Follow")
+        {
+            Player playerLogic = player.GetComponent<Player>();
+            StartCoroutine(OnHit(playerLogic.dmg*3));
 
         }
     }

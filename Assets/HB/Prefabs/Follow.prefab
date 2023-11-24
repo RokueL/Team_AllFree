@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 612835827009084325}
   m_Layer: 12
   m_Name: PlayerAttack
-  m_TagString: PlayerAttack
+  m_TagString: Follow
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -246,9 +246,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab011176b6ed5d94990f11b6a3683c96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0
+  startAttackDelay: 0
   parent: {fileID: 0}
   player: {fileID: 0}
   attack: {fileID: 0}
+  gameManager: {fileID: 0}
+  objectManager: {fileID: 0}
 --- !u!70 &221496527357359471
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

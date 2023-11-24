@@ -19,8 +19,6 @@ public class FollowCat : MonoBehaviour
 
     float distance;
 
-    
-
     [Header("[ÆÈ·Î¿ì ºÎ¸ð]")]
     public Transform parent;
 

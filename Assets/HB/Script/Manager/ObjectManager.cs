@@ -37,13 +37,11 @@ public class ObjectManager : MonoBehaviour
 
 
     [Header("ÄÚ¾î")]
-    public GameObject coreAPrb;
-    public GameObject coreBPrb;
-    public GameObject coreCPrb;
+    public GameObject rollCorePrb;
+    public GameObject summonCorePrb;
+    public GameObject dropCorePrb;
 
-    public GameObject damage_CorePrb;
-    public GameObject speed_CorePrb;
-    public GameObject health_CorePrb;
+    public GameObject stateCorePrb;
 
     GameObject[] ground_Effect;
 
@@ -73,13 +71,11 @@ public class ObjectManager : MonoBehaviour
     GameObject[] silver;
     GameObject[] bronze;
 
-    GameObject[] coreA;
-    GameObject[] coreB;
-    GameObject[] coreC;
+    GameObject[] rollCore;
+    GameObject[] summonCore;
+    GameObject[] dropCore;
 
-    GameObject[] damage_Core;
-    GameObject[] speed_Core;
-    GameObject[] health_Core;
+    GameObject[] stateCore;
 
     GameObject[] itemBox;
 
@@ -113,13 +109,11 @@ public class ObjectManager : MonoBehaviour
         silver = new GameObject[30];
         bronze = new GameObject[30];
 
-        coreA = new GameObject[1];
-        coreB = new GameObject[1];
-        coreC = new GameObject[1];
+        rollCore = new GameObject[1];
+        summonCore = new GameObject[1];
+        dropCore = new GameObject[1];
 
-        damage_Core = new GameObject[5];
-        speed_Core = new GameObject[5];
-        health_Core = new GameObject[5];
+        stateCore = new GameObject[5];
 
         itemBox = new GameObject[15];
 
@@ -214,38 +208,27 @@ public class ObjectManager : MonoBehaviour
             bronze[index].SetActive(false);
         }
 
-        for (int index = 0; index < coreA.Length; index++)
+        for (int index = 0; index < rollCore.Length; index++)
         {
-            coreA[index] = Instantiate(coreAPrb);
-            coreA[index].SetActive(false);
+            rollCore[index] = Instantiate(rollCorePrb);
+            rollCore[index].SetActive(false);
         }
-        for (int index = 0; index < coreB.Length; index++)
+        for (int index = 0; index < summonCore.Length; index++)
         {
-            coreB[index] = Instantiate(coreBPrb);
-            coreB[index].SetActive(false);
+            summonCore[index] = Instantiate(summonCorePrb);
+            summonCore[index].SetActive(false);
         }
-        for (int index = 0; index < coreC.Length; index++)
+        for (int index = 0; index < dropCore.Length; index++)
         {
-            coreC[index] = Instantiate(coreCPrb);
-            coreC[index].SetActive(false);
-        }
-
-        for (int index = 0; index < damage_Core.Length; index++)
-        {
-            damage_Core[index] = Instantiate(damage_CorePrb);
-            damage_Core[index].SetActive(false);
-        }
-        for (int index = 0; index < speed_Core.Length; index++)
-        {
-            speed_Core[index] = Instantiate(speed_CorePrb);
-            speed_Core[index].SetActive(false);
-        }
-        for (int index = 0; index < health_Core.Length; index++)
-        {
-            health_Core[index] = Instantiate(health_CorePrb);
-            health_Core[index].SetActive(false);
+            dropCore[index] = Instantiate(dropCorePrb);
+            dropCore[index].SetActive(false);
         }
 
+        for (int index = 0; index < stateCore.Length; index++)
+        {
+            stateCore[index] = Instantiate(stateCorePrb);
+            stateCore[index].SetActive(false);
+        }
         for (int index = 0; index < itemBox.Length; index++)
         {
             itemBox[index] = Instantiate(itemBoxPrb);
@@ -312,24 +295,18 @@ public class ObjectManager : MonoBehaviour
                 targetPool = bronze;
                 break;
 
-            case "coreA":
-                targetPool = coreA;
+            case "rollCore":
+                targetPool = rollCore;
                 break;
-            case "coreB":
-                targetPool = coreB;
+            case "summonCore":
+                targetPool = summonCore;
                 break;
-            case "coreC":
-                targetPool = coreC;
+            case "dropCore":
+                targetPool = dropCore;
                 break;
 
-            case "damage_Core":
-                targetPool = damage_Core;
-                break;
-            case "speed_Core":
-                targetPool = speed_Core;
-                break;
-            case "health_Core":
-                targetPool = health_Core;
+            case "stateCore":
+                targetPool = stateCore;
                 break;
 
             case "itemBox":
