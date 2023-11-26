@@ -1,10 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("ÇÃ·¹ÀÌ¾î »óÅÂ")]
+    [Header("í”Œë ˆì´ì–´ ìƒíƒœ")]
     public float curLife;
     public float maxLife;
     public float curCoolDown;
@@ -16,13 +17,13 @@ public class Player : MonoBehaviour
     
     public bool isStart;
 
-    [Header("½ºÅ×ÀÌÅÍ½º ÄÚ¾î")]
+    [Header("ìŠ¤í…Œì´í„°ìŠ¤ ì½”ì–´")]
     public bool stateCore;
 
-    [Header("Á¦¹° °¹¼ö")]
+    [Header("ì œë¬¼ ê°¯ìˆ˜")]
     public float sacrifice;
 
-    [Header("½ºÅ³ ÄÚ¾î º¸À¯ ¿©ºÎ")]
+    [Header("ìŠ¤í‚¬ ì½”ì–´ ë³´ìœ  ì—¬ë¶€")]
     public bool CrouchCore;
     public bool RollCore;
     public bool DropCore;
@@ -31,13 +32,13 @@ public class Player : MonoBehaviour
     public enum Skill_Core { Crouch, Roll, Drop, Summon }
     public Skill_Core skill_Type;
 
-    [Header("ÇöÀç »ç¿ëÁßÀÎ ½ºÅ³ ÄÚ¾î")]
+    [Header("í˜„ì¬ ì‚¬ìš©ì¤‘ì¸ ìŠ¤í‚¬ ì½”ì–´")]
     public bool isCrouchCore;
     public bool isRollCore;
     public bool isDropCore;
     public bool isSummonCore;
 
-    [Header("ÇöÀç ÀåÂøÁßÀÎ ½ºÅ³ ÄÚ¾î")]
+    [Header("í˜„ì¬ ì¥ì°©ì¤‘ì¸ ìŠ¤í‚¬ ì½”ì–´")]
     public bool equipCrouch;
     public bool equipRoll;
     public bool equipDrop;
@@ -45,12 +46,12 @@ public class Player : MonoBehaviour
 
     public float equipCount;
 
-    [Header("ÇöÀç ¼ÒÈ¯¼ö °¹¼ö")]
+    [Header("í˜„ì¬ ì†Œí™˜ìˆ˜ ê°¯ìˆ˜")]
     public int followCount;
     int maxFollowCount;
     int hpDecrease;
 
-    [Header("°ø°İ Å¸ÀÔ")]
+    [Header("ê³µê²© íƒ€ì…")]
     public bool isNormal;
     public bool isPower;
     public bool isSharp;
@@ -59,15 +60,19 @@ public class Player : MonoBehaviour
     public enum Att_Type { Normal, Power, Sharp, Mystic }
     public Att_Type att_Type;
 
+
+    [Header("ì£½ì„ ë•Œ ì´í™íŠ¸")] 
+    public ParticleSystem DeadEffect;
+    
     bool Q_IsSwitch;
 
     float roll_Speed;
 
-    //°ø°İ µô·¹ÀÌ
+    //ê³µê²© ë”œë ˆì´
     float curAttackDelay;
     float maxAttackDelay;
 
-    //½ºÅ³ Áö¼Ó½Ã°£
+    //ìŠ¤í‚¬ ì§€ì†ì‹œê°„
     float curSkillTime;
     float maxSkillTime;
 
@@ -89,12 +94,12 @@ public class Player : MonoBehaviour
     public bool OnSkill;
 
     //Trigger
-    bool isTouchRoom;       //Åõ¸íº® ¹Ì±¸Çö
+    bool isTouchRoom;       //íˆ¬ëª…ë²½ ë¯¸êµ¬í˜„
 
-    [Header("Æ®¸®°Å")]
+    [Header("íŠ¸ë¦¬ê±°")]
     public bool isElite;
     public bool isBoss;
-    public bool clearMap;       //Å¬¸®¾î ½Ã Æ®¸®°Å ÀÛµ¿(¹Ì±¸Çö)
+    public bool clearMap;       //í´ë¦¬ì–´ ì‹œ íŠ¸ë¦¬ê±° ì‘ë™(ë¯¸êµ¬í˜„)
 
     bool OnElite;
     bool OnBoss;
@@ -104,7 +109,7 @@ public class Player : MonoBehaviour
     bool isCheat;
     public bool isCameraMove;
 
-    [Header("¿ÀºêÁ§Æ®")]
+    [Header("ì˜¤ë¸Œì íŠ¸")]
     public ObjectManager objectManager;
     public GameManager gameManager;
     public GameObject crouchParticle;
@@ -123,28 +128,28 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        //ÃÖ´ëÃ¼·Â&ÀüÃ¼Ã¼·Â
+        //ìµœëŒ€ì²´ë ¥&ì „ì²´ì²´ë ¥
         maxLife = 100;
         curLife = 100;
 
-        //ÄğÅ¸ÀÓ
+        //ì¿¨íƒ€ì„
         maxCoolDown = 0;
 
-        //°ø°İ·Â&¼Óµµ&±¸¸£±â ¼Óµµ
+        //ê³µê²©ë ¥&ì†ë„&êµ¬ë¥´ê¸° ì†ë„
         dmg = 15;
         speed = 5;
         roll_Speed = speed;
 
-        //°ø°İ¼Óµµ&ÃÖ´ë½ºÅ³½Ã°£
+        //ê³µê²©ì†ë„&ìµœëŒ€ìŠ¤í‚¬ì‹œê°„
         maxAttackDelay = 0.5f;
         maxSkillTime = 2f;
 
-        //¼ÒÈ¯¼ö Á¤º¸
+        //ì†Œí™˜ìˆ˜ ì •ë³´
         maxFollowCount = 3;
         followCount = 0;
         hpDecrease = 25;
 
-        //½ºÅ³ÄÚ¾î ¹× °ø°İÅ¸ÀÔ
+        //ìŠ¤í‚¬ì½”ì–´ ë° ê³µê²©íƒ€ì…
         CrouchCore = true;
         skill_Type = Skill_Core.Crouch;
         equipCount = 1;
@@ -179,8 +184,9 @@ public class Player : MonoBehaviour
 
         LifeCheck();
         StartCoroutine(LifeCheat());
+        JCanvas.Instance.HPBarSet(maxLife,curLife);
     }
-    //ÇÃ·¹ÀÌ¾î ÀÌµ¿
+    //í”Œë ˆì´ì–´ ì´ë™
     void MoveMent()
     {
         if (!clearMap && Move_Axis == 1)
@@ -215,7 +221,7 @@ public class Player : MonoBehaviour
         rigid.gravityScale = 3;
     }
 
-    //½ÃÀÛ Àü µ¿ÀÛ ºÒ°¡
+    //ì‹œì‘ ì „ ë™ì‘ ë¶ˆê°€
     void InPut()
     {
         if (!isStart || isCrouch || isCameraMove || isElite || isBoss)
@@ -224,11 +230,11 @@ public class Player : MonoBehaviour
             return;
         }
 
-        Move_Axis = Input.GetAxisRaw("Horizontal"); //ÀÌµ¿
-        isAtt = Input.GetKeyDown(KeyCode.A);          //°ø°İ
-        isJump = Input.GetKeyDown(KeyCode.S);         //Á¡ÇÁ
-        Q_IsSwitch = Input.GetKeyDown(KeyCode.Q);   //°ø°İ Å¸ÀÔ ½½·ÔÃ¼ÀÎÁö ³ë¸Ö->ÆÄ¿ö->Á¤¹Ğ->½Åºñ
-        isCheat = Input.GetKeyDown(KeyCode.L);      //Ä¡Æ®Å°= Ã¼·Â 100Áõ°¡
+        Move_Axis = Input.GetAxisRaw("Horizontal"); //ì´ë™
+        isAtt = Input.GetKeyDown(KeyCode.A);          //ê³µê²©
+        isJump = Input.GetKeyDown(KeyCode.S);         //ì í”„
+        Q_IsSwitch = Input.GetKeyDown(KeyCode.Q);   //ê³µê²© íƒ€ì… ìŠ¬ë¡¯ì²´ì¸ì§€ ë…¸ë©€->íŒŒì›Œ->ì •ë°€->ì‹ ë¹„
+        isCheat = Input.GetKeyDown(KeyCode.L);      //ì¹˜íŠ¸í‚¤= ì²´ë ¥ 100ì¦ê°€
 
     }
     void Input_Skill()
@@ -238,7 +244,7 @@ public class Player : MonoBehaviour
 
         if (!OnSkill)
         {
-            OnSkill = Input.GetKeyDown(KeyCode.D);      //½ºÅ³
+            OnSkill = Input.GetKeyDown(KeyCode.D);      //ìŠ¤í‚¬
         }
         else
             curCoolDown = 0;
@@ -284,7 +290,7 @@ public class Player : MonoBehaviour
         curAttackDelay = 0;
     }
 
-    //½ºÅ³
+    //ìŠ¤í‚¬
     IEnumerator Skill()
     {
         switch (skill_Type)
@@ -432,20 +438,20 @@ public class Player : MonoBehaviour
             OnSkill = false;
     }
 
-    //Ã¼·Â È®ÀÎ
+    //ì²´ë ¥ í™•ì¸
     void LifeCheck()
     {
         if (curLife > maxLife)
             curLife = maxLife;
     }
 
-    //°ø°İÅ¸ÀÔ ·ÎÁ÷
+    //ê³µê²©íƒ€ì… ë¡œì§
     IEnumerator Switching_Attack_Type()
     {
         if (Q_IsSwitch)
         {
             int num;
-            //3°³ ÀåºñÁß
+            //3ê°œ ì¥ë¹„ì¤‘
             if (equipCount == 3)
             {
                 num = Equip_Core_3();
@@ -731,7 +737,7 @@ public class Player : MonoBehaviour
         }
         return 0;
     }
-    //Ä¡Æ®     Life+100
+    //ì¹˜íŠ¸     Life+100
     IEnumerator LifeCheat()
     {
         if (!isCheat)
@@ -745,7 +751,7 @@ public class Player : MonoBehaviour
         isCheat = false;
     }
 
-    //ÇÇ°İ
+    //í”¼ê²©
     IEnumerator OnHit(float dmg)
     {
         if (isHit)
@@ -760,6 +766,11 @@ public class Player : MonoBehaviour
 
         if (curLife < 0)
         {
+            DeadEffect.transform.position = this.transform.position; 
+            DeadEffect.Play();
+            JCanvas.Instance.DeadCanvas.SetActive(true);
+            JCanvas.Instance.InGameHPBar.GetComponent<CanvasGroup>().DOFade(0f, 0.5f);
+            JCanvas.Instance.PlayerDeadEvent();
             gameObject.SetActive(false);
         }
         yield return new WaitForSeconds(0.3f);
@@ -772,7 +783,7 @@ public class Player : MonoBehaviour
         spriteRenderer.color = new Color(1, 1, 1, Alpha);
     }
 
-    //º¸½º ½ÃÀÛ Æ®¸®°Å
+    //ë³´ìŠ¤ ì‹œì‘ íŠ¸ë¦¬ê±°
     IEnumerator EliteStart()
     {
         isElite = true;
