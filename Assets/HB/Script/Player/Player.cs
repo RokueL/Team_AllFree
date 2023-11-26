@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -59,6 +60,10 @@ public class Player : MonoBehaviour
     public enum Att_Type { Normal, Power, Sharp, Mystic }
     public Att_Type att_Type;
 
+
+    [Header("죽을 때 이펙트")] 
+    public ParticleSystem DeadEffect;
+    
     bool Q_IsSwitch;
 
     float roll_Speed;
@@ -761,6 +766,11 @@ public class Player : MonoBehaviour
 
         if (curLife < 0)
         {
+            DeadEffect.transform.position = this.transform.position; 
+            DeadEffect.Play();
+            JCanvas.Instance.DeadCanvas.SetActive(true);
+            JCanvas.Instance.InGameHPBar.GetComponent<CanvasGroup>().DOFade(0f, 0.5f);
+            JCanvas.Instance.PlayerDeadEvent();
             gameObject.SetActive(false);
         }
         yield return new WaitForSeconds(0.3f);

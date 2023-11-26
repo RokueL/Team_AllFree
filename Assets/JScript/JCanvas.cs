@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
@@ -39,6 +40,10 @@ public class JCanvas : MonoBehaviour
     [Header("==============================================")] [Space(1f)]
     public string s;
     
+    /// <summary> [게임 오브젝트] 주금 캔버스 </summary>
+    [Header("죽음 캔버스")]
+    public GameObject DeadCanvas;
+    
     /// <summary> [게임 오브젝트] 인 게임 캔버스 </summary>
     [Header("인 게임 캔버스")]
     public GameObject InGameCanvas;
@@ -58,6 +63,10 @@ public class JCanvas : MonoBehaviour
     /// <summary> [게임 오브젝트] HPbar 오브젝트 </summary>
     [Header("인 게임 체력 바 슬라이더")] 
     public Slider InGameHPBarSlider;
+    
+    /// <summary> [게임 오브젝트] Resolution 오브젝트 </summary>
+    [Header("메인 게임 해상도 조절")] 
+    public Dropdown MainResolution;
     
     /// <summary> [게임 오브젝트] Resolution 오브젝트 </summary>
     [Header("인 게임 해상도 조절")] 
@@ -80,6 +89,22 @@ public class JCanvas : MonoBehaviour
     /// <summary> [게임 오브젝트] 플레이어 </summary>
     [Header("[게임 오브젝트] 플레이어")]
     public GameObject Player;
+
+    /// <summary> [사운드 오브젝트] 버튼 사운드 </summary>
+    [Header("[사운드 오브젝트]버튼 올리면 사운드")] public AudioSource PointEnter;
+    
+    /// <summary> [사운드 오브젝트] 버튼 사운드 </summary>
+    [Header("[사운드 오브젝트]메인 사운드")] public AudioSource MainBGM;
+    
+    /// <summary> [사운드 오브젝트] 메인 설정 사운드 </summary>
+    [Header("[사운드 오브젝트]메인 설정 슬라이더")] public Slider MainSlider;
+    
+    /// <summary> [사운드 오브젝트] 인게임 설정 사운드 </summary>
+    [Header("[사운드 오브젝트]인게임 설정 슬라이더")] public Slider InGameSlider;
+
+    /// <summary> [사운드 변수] 사운드 크기 값 </summary>
+    [Header("[사운드 변수]사운드 크기 값")]
+    public float SoundValue;
     
 
 
@@ -96,18 +121,25 @@ public class JCanvas : MonoBehaviour
         
         resolutions.AddRange(Screen.resolutions);
         InGameResolution.options.Clear();
+        MainResolution.options.Clear();
 
         foreach (Resolution item in resolutions)
         {
             Dropdown.OptionData option = new Dropdown.OptionData();
             option.text = item.width + " x " + item.height + " x " + item.refreshRateRatio + "hz";
             InGameResolution.options.Add(option);
+            MainResolution.options.Add(option);
 
             if (item.width == Screen.width && item.height == Screen.height)
+            {
                 InGameResolution.value = nResolutionNum;
+                MainResolution.value = nResolutionNum;
+            }
+
             nResolutionNum++;
         }
         InGameResolution.RefreshShownValue();
+        MainResolution.RefreshShownValue();
     }
     
     // Start is called before the first frame update
@@ -144,6 +176,12 @@ public class JCanvas : MonoBehaviour
 //==================================================================================
 //==================================================================================
 
+    public void OnActiveSetting()
+    {
+        
+    }
+    
+
     public void HPBarSet(float Max, float Cur)
     {
         InGameHPBarSlider.value = Cur / Max;
@@ -163,6 +201,30 @@ public class JCanvas : MonoBehaviour
     {
         Screen.SetResolution(resolutions[nResolutionNum].width,resolutions[nResolutionNum].height,FullScreenMode.FullScreenWindow);
     }
+
+    public void PlayerDead()
+    {
+        DeadCanvas.GetComponent<CanvasGroup>().DOFade(1f, 1f);
+    }
+    
+    public void SoundSetting(float x)
+    {
+        SoundValue = x;
+        MainSlider.value = SoundValue;
+        InGameSlider.value = SoundValue;
+        MainBGM.volume = SoundValue;
+        PointEnter.volume = SoundValue;
+    }
+
+    public void GameEnd()
+    {
+        Application.Quit();
+    }
+    
+    public void GameRestart()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene (gameObject.scene.name);
+    }
     
 //==================================================================================
 //==================================================================================
@@ -171,6 +233,9 @@ public class JCanvas : MonoBehaviour
 //==================================================================================
 //==================================================================================
 //==================================================================================
+
+
+
 
     /// <summary> 시작 버튼 이벤트 </summary>
     public void OnStartBtnEvent()
@@ -193,12 +258,26 @@ public class JCanvas : MonoBehaviour
     /// <summary> 버튼 올리면 켜지기 </summary>
     public void ESCButtonEnterEvent(GameObject Btn)
     {
+        PointEnter.Play();
         Btn.GetComponent<Image>().DOFade(0.2f, 0.3f);
     }
     /// <summary> 버튼 벗어나면 끄기 </summary>
     public void ESCButtonExitEvent(GameObject Btn)
     {
+        PointEnter.Play();
         Btn.GetComponent<Image>().DOFade(0f, 0.3f);
+    }
+    
+    /// <summary> 메인 버튼 올리면 켜지기 </summary>
+    public void MainButtonEnterEvent(GameObject Btn)
+    {
+        PointEnter.Play();
+        Btn.GetComponent<Image>().DOFade(1f, 0.5f);
+    }
+    /// <summary> 메인 버튼 벗어나면 끄기 </summary>
+    public void MainButtonExitEvent(GameObject Btn)
+    {
+        Btn.GetComponent<Image>().DOFade(0f, 0.5f);
     }
 
     public void WindowOpenEvent(GameObject Canvas)
@@ -211,8 +290,14 @@ public class JCanvas : MonoBehaviour
     
     public void WindowCloseEvent(GameObject Canvas)
     {
-        Canvas.GetComponent<CanvasGroup>().DOFade(0f, 0.3f);
+        PointEnter.Play();
+        Canvas.GetComponent<CanvasGroup>().DOFade(0f, 0.4f);
         Canvas.SetActive(false);
+    }
+
+    public void PlayerDeadEvent()
+    {
+        Invoke("PlayerDead", 2f);
     }
     
     
