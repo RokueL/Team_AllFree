@@ -6,6 +6,8 @@ public class ObjectManager : MonoBehaviour
 {
     [Header("파티클")]
     public GameObject ground_EffectPrb;
+    public GameObject spawn_EffectPrb;
+    public GameObject roar_EffectPrb;
 
     [Header("팔로우캣&텔레포트 파티클")]
     public GameObject followCatPrb;
@@ -44,6 +46,8 @@ public class ObjectManager : MonoBehaviour
     public GameObject stateCorePrb;
 
     GameObject[] ground_Effect;
+    GameObject[] spawn_Effect;
+    GameObject[] roar_Effect;
 
     GameObject[] followCat;
     GameObject[] teleport;
@@ -86,6 +90,8 @@ public class ObjectManager : MonoBehaviour
     void Awake()
     {
         ground_Effect = new GameObject[25];
+        spawn_Effect = new GameObject[5];
+        roar_Effect = new GameObject[5];
 
         followCat = new GameObject[10];
         teleport = new GameObject[10];
@@ -125,7 +131,18 @@ public class ObjectManager : MonoBehaviour
         {
             ground_Effect[index] = Instantiate(ground_EffectPrb);
             ground_Effect[index].SetActive(false);
+        }
+        for (int index = 0; index < spawn_Effect.Length; index++)
+        {
+            spawn_Effect[index] = Instantiate(spawn_EffectPrb);
+            spawn_Effect[index].SetActive(false);
+        }
+        for (int index = 0; index < roar_Effect.Length; index++)
+        {
+            roar_Effect[index] = Instantiate(roar_EffectPrb);
+            roar_Effect[index].SetActive(false);
         } 
+
         for (int index = 0; index < followCat.Length; index++)
         {
             followCat[index] = Instantiate(followCatPrb);
@@ -241,6 +258,13 @@ public class ObjectManager : MonoBehaviour
         {
             case "ground_Effect":
                 targetPool = ground_Effect;
+                break;
+
+            case "spawn_Effect":
+                targetPool = spawn_Effect;
+                break;
+            case "roar_Effect":
+                targetPool = roar_Effect;
                 break;  
 
             case "followCat":

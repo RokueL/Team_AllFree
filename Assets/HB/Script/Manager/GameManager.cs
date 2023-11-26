@@ -1,4 +1,4 @@
-ï»¿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public  float harf_ViewHeaight_Y;
     public float harf_ViewHeaight_X;
 
-    [Header("ìƒí•˜ì¢Œìš° ì¹´ë©”ë¼ íƒ€ê²Ÿ")]
+    [Header("»óÇÏÁÂ¿ì Ä«¸Ş¶ó Å¸°Ù")]
     public Transform bossCamera;
 
     public Transform[] target;
@@ -33,11 +33,10 @@ public class GameManager : MonoBehaviour
 
     public List<CoreInf> coreInformation;
     public int StateCoreIndex;
+    
+    public Vector3[] eliteSkill_Spot;
 
-    [Header("[ìŠ¤í° ì§€ì ]ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„° ìŠ¤í‚¬")]
-    public Transform[] eliteSkill_Spot;
-
-    [Header("[ìŠ¤í° ì§€ì ]{ì›ê±°ë¦¬}{ê·¼ê±°ë¦¬}{ì•„ì´í…œë°•ìŠ¤}{ë‚™í•˜ë¬¼}{ë³´ìŠ¤}")]
+    [Header("[½ºÆù ÁöÁ¡]{¿ø°Å¸®}{±Ù°Å¸®}{¾ÆÀÌÅÛ¹Ú½º}{³«ÇÏ¹°}{º¸½º}")]
     public Transform[] Range_SpawnPoint;
     public Transform[] Shot_SpawnPoint;
     public Transform[] Item_SpawnPoint;
@@ -45,19 +44,19 @@ public class GameManager : MonoBehaviour
     public Transform eliteSpawnPoint;
     public Transform bossSpawnPoint;
 
-    [Header("ë³´ìŠ¤ë§µ íˆ¬ëª…ë²½")]
+    [Header("º¸½º¸Ê Åõ¸íº®")]
     public BoxCollider2D[] elite_Border;
     public BoxCollider2D[] boss_Border;
-    [Header("ë³´ìŠ¤ë§µ íŠ¸ë¦¬ê±°")]
+    [Header("º¸½º¸Ê Æ®¸®°Å")]
     public GameObject eliteMonster_Trigger;
     public GameObject boss_Trigger;
 
 
-    [Header("í”Œë ˆì´ì–´")]
+    [Header("ÇÃ·¹ÀÌ¾î")]
     public GameObject player;
-    [Header("ì˜¤ë¸Œì íŠ¸ ë§¤ë‹ˆì €")]
+    [Header("¿ÀºêÁ§Æ® ¸Å´ÏÀú")]
     public ObjectManager objectManager;
-    [Header("ëª¬ìŠ¤í„°ìŠ¤í¬ë¦½íŠ¸")]
+    [Header("¸ó½ºÅÍ½ºÅ©¸³Æ®")]
     public Enemy enemyScript;
 
     void Awake()
@@ -68,23 +67,25 @@ public class GameManager : MonoBehaviour
         smoothCamera = false;
         touchingCamera = false;
 
-        delay = 0.01f;  //ê±°ë¦¬ê°€ 0.01ê¹Œì§€ íƒ€ê²Ÿì§€ì ìœ¼ë¡œ ì¹´ë©”ë¼ ì´ë™
-        Move_smoothTime = 0.2f; //ì¹´ë©”ë¼ ì†ë„
+        delay = 0.01f;  //°Å¸®°¡ 0.01±îÁö Å¸°ÙÁöÁ¡À¸·Î Ä«¸Ş¶ó ÀÌµ¿
+        Move_smoothTime = 0.2f; //Ä«¸Ş¶ó ¼Óµµ
 
-        //ì¹´ë©”ë¼ ì‚¬ì´ì¦ˆ
+        //Ä«¸Ş¶ó »çÀÌÁî
         harf_ViewHeaight_Y = Camera.main.orthographicSize;
         harf_ViewHeaight_X = Camera.main.orthographicSize * 16 / 9;
         viewHeight_Y = harf_ViewHeaight_Y * 2;
         viewHeight_X = harf_ViewHeaight_X * 2;
 
-        //ì´ë™ ì¹´ë©”ë¼ ì¢Œí‘œ
+        //ÀÌµ¿ Ä«¸Ş¶ó ÁÂÇ¥
         target[0].transform.localPosition = new Vector3(0,viewHeight_Y+delay,-1);
         target[1].transform.localPosition = new Vector3(0, -viewHeight_Y + delay, -1);
         target[2].transform.localPosition = new Vector3(viewHeight_X+delay,0, -1);
         target[3].transform.localPosition = new Vector3(-viewHeight_X + delay, 0, -1);
-        
 
-        SpawnEnemy();//ë ˆë²¨ ì§€ì • ì „ê¹Œì§€ ì„ì‹œ ìŠ¤í°
+        //EliteSkillSpot
+        eliteSkill_Spot = new Vector3[3];
+
+        SpawnEnemy();//·¹º§ ÁöÁ¤ Àü±îÁö ÀÓ½Ã ½ºÆù
     }
     void Update()
     {
@@ -98,7 +99,7 @@ public class GameManager : MonoBehaviour
             SmoothCamera();
         }
     }
-    //ì¹´ë©”ë¼ ì´ë™
+    //Ä«¸Ş¶ó ÀÌµ¿
     void TouchCamera()
     {
         if (player.transform.position.y + harf_ViewHeaight_Y > target[0].position.y)
@@ -117,7 +118,7 @@ public class GameManager : MonoBehaviour
         {
             isLeftMap = true;
         }
-    }       //ì¹´ë©”ë¼ íŠ¸ë¦¬ê±°
+    }       //Ä«¸Ş¶ó Æ®¸®°Å
     void NextMap()
     {
         Player playerLogic = player.GetComponent<Player>();
@@ -183,7 +184,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-    }           //ë‹¤ìŒë§µìœ¼ë¡œ ì¹´ë©”ë¼ ì´ë™
+    }           //´ÙÀ½¸ÊÀ¸·Î Ä«¸Ş¶ó ÀÌµ¿
     void SmoothCamera()
     {
         smoothCamera = true;
@@ -193,10 +194,10 @@ public class GameManager : MonoBehaviour
     }
     public void SmoothCameraOn()
     {
-        Invoke("SmoothCamera", 2f);
+        Invoke("SmoothCamera", 7f);
     }
 
-    //ì¹´ë©”ë¼ í”ë“¤ê¸°
+    //Ä«¸Ş¶ó Èçµé±â
     public void ShakeCam(float power, float shakeTime)
     {
         StartCoroutine(CameraShake(power, shakeTime));
@@ -224,7 +225,7 @@ public class GameManager : MonoBehaviour
     }
     public void Normal()
     {
-        enemyScript.level = Enemy.Level.Easy; //Normalì„ íƒì‹œ Easyë‚œì´ë„ ì„¤ì •
+        enemyScript.level = Enemy.Level.Easy; //Normal¼±ÅÃ½Ã Easy³­ÀÌµµ ¼³Á¤
     }
     public void Hard()
     {
@@ -260,9 +261,9 @@ public class GameManager : MonoBehaviour
     }
     public void PrintInfo()
     {
-        Debug.Log($"ìŠ¤íƒ¯ì½”ì–´[{StateCoreIndex+1}] í˜„ì¬ ê°¯ìˆ˜:"+ (StateCoreIndex+1));
-        Debug.Log($"ìŠ¤íƒ¯ì½”ì–´[{StateCoreIndex}] +ê³µê²©ë ¥ ëŠ¥ë ¥ì¹˜:" + coreInformation[StateCoreIndex].increaseDamage);
-        Debug.Log($"ìŠ¤íƒ¯ì½”ì–´[{StateCoreIndex}] +ì²´ë ¥ ëŠ¥ë ¥ì¹˜:" + coreInformation[StateCoreIndex].increaseHealth);
+        Debug.Log($"½ºÅÈÄÚ¾î[{StateCoreIndex+1}] ÇöÀç °¹¼ö:"+ (StateCoreIndex+1));
+        Debug.Log($"½ºÅÈÄÚ¾î[{StateCoreIndex}] +°ø°İ·Â ´É·ÂÄ¡:" + coreInformation[StateCoreIndex].increaseDamage);
+        Debug.Log($"½ºÅÈÄÚ¾î[{StateCoreIndex}] +Ã¼·Â ´É·ÂÄ¡:" + coreInformation[StateCoreIndex].increaseHealth);
     }
     public void EquipCore()
     {
@@ -272,14 +273,34 @@ public class GameManager : MonoBehaviour
 
     }
 
-    //ì´í™íŠ¸
+    //ÀÌÆåÆ®
     public void Ground_Effect(Vector3 target)
     {
         GameObject ground_Effect = objectManager.MakeObj("ground_Effect");
+        ParticleSystem tround_EffectLogic = ground_Effect.GetComponent<ParticleSystem>();
+        tround_EffectLogic.Play();
         ground_Effect.transform.position = target;
     }
+    public void Spawn_Effect(Vector3 target,float time)
+    {
+        GameObject spawn_Effect = objectManager.MakeObj("spawn_Effect");
+        ParticleSystem spawn_EffectLogic = spawn_Effect.GetComponent<ParticleSystem>();
+        spawn_EffectLogic.Play();
+        spawn_Effect.GetComponent<Effect>().time = time;
 
-    //ëª¬ìŠ¤í„° ë° ì•„ì´í…œë°•ìŠ¤ ë³´ìŠ¤ ìŠ¤í°
+        spawn_Effect.transform.position = target+ Vector3.up * 3;
+        
+    }
+    public void Roar_Effect(Vector3 target,float time)
+    {
+        GameObject roar_Effect = objectManager.MakeObj("roar_Effect");
+        ParticleSystem roar_EffectLogic = roar_Effect.GetComponent<ParticleSystem>();
+        roar_Effect.GetComponent<Effect>().time = time;
+        roar_Effect.transform.position = target;
+        roar_EffectLogic.Play();
+    }
+
+    //¸ó½ºÅÍ ¹× ¾ÆÀÌÅÛ¹Ú½º º¸½º ½ºÆù
     public void CreateBoss()
     {
 
@@ -305,6 +326,7 @@ public class GameManager : MonoBehaviour
         eliteLogic.enemyScript = enemyScript;
         eliteLogic.Trigger = boss_Trigger;
         eliteLogic.gameManager = this;
+        
         eliteLogic.point = eliteSkill_Spot;
 
     }
@@ -355,8 +377,14 @@ public class GameManager : MonoBehaviour
 
         }
     }
+    public void EliteMonsterSkill()
+    {
+        eliteSkill_Spot[0] =new Vector3(player.transform.position.x+2,-7);
+        eliteSkill_Spot[1] = new Vector3(player.transform.position.x, -7);
+        eliteSkill_Spot[2] = new Vector3(player.transform.position.x-2, -7);
+    }
 
-    //ë³´ìŠ¤ì „ ë‚™í•˜ë¬¼ ë° ëª¬ìŠ¤í„° ìŠ¤í°
+    //º¸½ºÀü ³«ÇÏ¹° ¹× ¸ó½ºÅÍ ½ºÆù
     public void DropDebris()
     {
         int ranCount = Random.Range(3, 6);
@@ -404,7 +432,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //ì†Œí™˜ìˆ˜ ìŠ¤í°
+    //¼ÒÈ¯¼ö ½ºÆù
     public void FollowerSpawn()
     {
         Player playerLogic = player.GetComponent<Player>();
@@ -459,7 +487,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //ëª¬ìŠ¤í„° ë‹¤ ì¡ì„ì‹œ í´ë¦¬ì–´ ì¡°ê±´ ë°œìƒ(ë¯¸êµ¬í˜„)
+    //¸ó½ºÅÍ ´Ù ÀâÀ»½Ã Å¬¸®¾î Á¶°Ç ¹ß»ı(¹Ì±¸Çö)
     public void MonsterKillCheck()
     {
         Player playerLogic = player.GetComponent<Player>();

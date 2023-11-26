@@ -45,8 +45,10 @@ public class Boss : Enemy
 
     public CircleCollider2D Rolling;
     public BoxCollider2D EarthQuake;
+    public BoxCollider2D Roar;
     public Enemy enemyScript;
     public GameObject Trigger;
+    public GameObject roarReadyParticle;
     
     void Awake()
     {
@@ -142,8 +144,8 @@ public class Boss : Enemy
         switch (level)
         {
             case Level.Easy:
-                health = 1000;
-                maxHealth = 1000;
+                health = 300;
+                maxHealth = 300;
                 dmg = 15;
                 rageGage = 70;
                 scaleCount = 5;
@@ -154,10 +156,10 @@ public class Boss : Enemy
                 break;
 
             case Level.Hard:
-                health = 300;
-                maxHealth = 300;
+                health = 700;
+                maxHealth = 700;
                 dmg = 20;
-                rageGage = 30;
+                rageGage = 70;
                 scaleCount = 9;
                 break;
 
@@ -290,11 +292,19 @@ public class Boss : Enemy
     {
         isAttack = true;
         anim.SetBool("isWalk", false);
-        yield return null;
-
-        anim.SetTrigger("Roar");
-
+        roarReadyParticle.SetActive(true);
         yield return new WaitForSeconds(PatternDelay);
+
+        roarReadyParticle.SetActive(false);
+        anim.SetTrigger("Roar");
+        gameManager.Roar_Effect(transform.position,0.5f);
+        Roar.enabled = true;
+
+        yield return new WaitForSeconds(0.1f);
+
+        Roar.enabled = false;
+        yield return new WaitForSeconds(PatternDelay);
+
         StartCoroutine(Think());
     }
 
@@ -523,7 +533,7 @@ public class Boss : Enemy
         if (collision.gameObject.tag == "Follow")
         {
             Player playerLogic = player.GetComponent<Player>();
-            StartCoroutine(OnHit(playerLogic.dmg*3));
+            StartCoroutine(OnHit(playerLogic.dmg*0.3f));
 
         }
     }

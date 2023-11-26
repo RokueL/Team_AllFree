@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class Effect : MonoBehaviour
 {
+    public float time;
+    private void Awake()
+    {
+        time = 1f;
+    }
     void OnEnable()
     {
-        Invoke("Off", 1f);
+        Invoke("Off", time);
     }
     void Off()
     {
