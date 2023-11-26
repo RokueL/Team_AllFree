@@ -90,7 +90,8 @@ public class FollowCat : MonoBehaviour
         Follow();
         Watch();
         InPut();
-        Teleport(); 
+        Teleport();
+        Die();
     }
     void Follow()
     {
@@ -130,6 +131,11 @@ public class FollowCat : MonoBehaviour
     {
         isAtt = Input.GetKeyDown(KeyCode.A);          //공격
         isJump = Input.GetKeyDown(KeyCode.S);         //점프
+    }
+    void Die()
+    {
+        if (player.activeSelf == false)
+            gameObject.SetActive(false);
     }
 
     IEnumerator Jump()

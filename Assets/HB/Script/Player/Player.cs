@@ -96,13 +96,14 @@ public class Player : MonoBehaviour
     public bool isBoss;
     public bool clearMap;       //클리어 시 트리거 작동(미구현)
 
+    public bool isCameraMove;
+
     bool OnElite;
     bool OnBoss;
 
     bool isHit;
 
     bool isCheat;
-    public bool isCameraMove;
 
     [Header("오브젝트")]
     public ObjectManager objectManager;
@@ -383,9 +384,10 @@ public class Player : MonoBehaviour
         {
             rigid.AddForce(Vector2.down * 20, ForceMode2D.Impulse);
 
-            yield return new WaitForSeconds(0.7f);
+            yield return new WaitForSeconds(0.2f);
 
             dropAttack.enabled = true;
+            gameManager.Roar_Effect(transform.position, 0.5f);
             yield return new WaitForSeconds(0.2f);
 
             dropAttack.enabled = false;
@@ -670,9 +672,9 @@ public class Player : MonoBehaviour
         }
         if (skill_Type == Skill_Core.Summon)
         {
-            isCrouchCore = true;
+            isCrouchCore = false;
             isRollCore = false;
-            isDropCore = true;
+            isDropCore = false;
             isSummonCore = true;
 
             att_Type = Att_Type.Mystic;

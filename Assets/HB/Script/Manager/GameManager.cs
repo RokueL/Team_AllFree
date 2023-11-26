@@ -33,9 +33,8 @@ public class GameManager : MonoBehaviour
 
     public List<CoreInf> coreInformation;
     public int StateCoreIndex;
-
-    [Header("[스폰 지점]엘리트 몬스터 스킬")]
-    public Transform[] eliteSkill_Spot;
+    
+    public Vector3[] eliteSkill_Spot;
 
     [Header("[스폰 지점]{원거리}{근거리}{아이템박스}{낙하물}{보스}")]
     public Transform[] Range_SpawnPoint;
@@ -82,7 +81,9 @@ public class GameManager : MonoBehaviour
         target[1].transform.localPosition = new Vector3(0, -viewHeight_Y + delay, -1);
         target[2].transform.localPosition = new Vector3(viewHeight_X+delay,0, -1);
         target[3].transform.localPosition = new Vector3(-viewHeight_X + delay, 0, -1);
-        
+
+        //EliteSkillSpot
+        eliteSkill_Spot = new Vector3[3];
 
         SpawnEnemy();//레벨 지정 전까지 임시 스폰
     }
@@ -276,7 +277,27 @@ public class GameManager : MonoBehaviour
     public void Ground_Effect(Vector3 target)
     {
         GameObject ground_Effect = objectManager.MakeObj("ground_Effect");
+        ParticleSystem tround_EffectLogic = ground_Effect.GetComponent<ParticleSystem>();
+        tround_EffectLogic.Play();
         ground_Effect.transform.position = target;
+    }
+    public void Spawn_Effect(Vector3 target,float time)
+    {
+        GameObject spawn_Effect = objectManager.MakeObj("spawn_Effect");
+        ParticleSystem spawn_EffectLogic = spawn_Effect.GetComponent<ParticleSystem>();
+        spawn_EffectLogic.Play();
+        spawn_Effect.GetComponent<Effect>().time = time;
+
+        spawn_Effect.transform.position = target+ Vector3.up * 3;
+        
+    }
+    public void Roar_Effect(Vector3 target,float time)
+    {
+        GameObject roar_Effect = objectManager.MakeObj("roar_Effect");
+        ParticleSystem roar_EffectLogic = roar_Effect.GetComponent<ParticleSystem>();
+        roar_Effect.GetComponent<Effect>().time = time;
+        roar_Effect.transform.position = target;
+        roar_EffectLogic.Play();
     }
 
     //몬스터 및 아이템박스 보스 스폰
@@ -305,6 +326,7 @@ public class GameManager : MonoBehaviour
         eliteLogic.enemyScript = enemyScript;
         eliteLogic.Trigger = boss_Trigger;
         eliteLogic.gameManager = this;
+        
         eliteLogic.point = eliteSkill_Spot;
 
     }
@@ -354,6 +376,12 @@ public class GameManager : MonoBehaviour
                 sprite.flipX = true;
 
         }
+    }
+    public void EliteMonsterSkill()
+    {
+        eliteSkill_Spot[0] =new Vector3(player.transform.position.x+2,-7);
+        eliteSkill_Spot[1] = new Vector3(player.transform.position.x, -7);
+        eliteSkill_Spot[2] = new Vector3(player.transform.position.x-2, -7);
     }
 
     //보스전 낙하물 및 몬스터 스폰

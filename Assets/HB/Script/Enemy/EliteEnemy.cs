@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EliteEnemy : Enemy
 {
-    public Transform[] point;
+    public Vector3[] point;
     public Enemy enemyScript;
 
     float frontPos;
@@ -238,6 +238,7 @@ public class EliteEnemy : Enemy
     IEnumerator Skill()
     {
         isSkill = true;
+        gameManager.Spawn_Effect(transform.position+Vector3.down*3,0.5f);
         yield return null;
 
         rigid.gravityScale = 10;
@@ -248,10 +249,14 @@ public class EliteEnemy : Enemy
         yield return new WaitForSeconds(0.4f);
         spriteRenderer.color = new Color(1, 1, 1, 0);
 
-        yield return new WaitForSeconds(1f);
-
+        gameManager.EliteMonsterSkill();
+        point = gameManager.eliteSkill_Spot;
         int ranPoint = Random.Range(0, point.Length);
-        transform.position = point[ranPoint].position;
+        gameManager.Spawn_Effect(point[ranPoint],1f);
+
+        yield return new WaitForSeconds(1f);
+        
+        transform.position = point[ranPoint];
 
         dig.enabled = true;
         rigid.velocity = Vector2.zero;
@@ -367,6 +372,12 @@ public class EliteEnemy : Enemy
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg));
+        }
+        if (collision.gameObject.tag == "Follow")
+        {
+            Player playerLogic = player.GetComponent<Player>();
+            StartCoroutine(OnHit(playerLogic.dmg * 0.3f));
+
         }
     }
 }
