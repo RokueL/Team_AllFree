@@ -12,6 +12,9 @@ public class JStartCameraSequence : MonoBehaviour
     /// <summary> [카메라 오브젝트] 메인 카메라 </summary>
     [Header("[카메라 오브젝트] 메인 카메라")]
     public GameObject MainCamGam;
+    /// <summary> [애니메이션] 카메라 애니메이션 </summary>
+    [Header("[애니메이션] 카메라 애니메이션")]
+    public Animation animationClip;
     /// <summary> [게임 오브젝트] 플레이어 </summary>
     [Header("[게임 오브젝트] 플레이어")]
     public GameObject Player;
@@ -26,6 +29,10 @@ public class JStartCameraSequence : MonoBehaviour
     /// <summary> [ 함수 ] 카메라 이벤트 처리 </summary>
     private void StartCamera()
     {
+        animationClip.enabled = false;
+        animationClip.enabled = true;
+        
+        animationClip.Play("CameraStart");
     }
 
     private void PlayerStartMove()
