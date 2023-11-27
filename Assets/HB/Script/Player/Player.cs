@@ -61,6 +61,11 @@ public class Player : MonoBehaviour
 
     bool Q_IsSwitch;
 
+    float crouchCoolDown;
+    float rollCoolDown;
+    float dropCoolDown;
+    float summonCoolDown;
+
     float roll_Speed;
 
     //공격 딜레이
@@ -85,6 +90,7 @@ public class Player : MonoBehaviour
     bool speedUp;
     bool speedDown;
     bool isCrouch;
+    bool isDash;
 
     public bool OnSkill;
 
@@ -108,7 +114,16 @@ public class Player : MonoBehaviour
     [Header("오브젝트")]
     public ObjectManager objectManager;
     public GameManager gameManager;
+    public SoundManager soundManager;
+
+    [Header("파티클")]
     public GameObject crouchParticle;
+    public GameObject right_DashParticle;
+    public GameObject left_DashParticle;
+    public GameObject coreChangeParticle;
+    public GameObject healingParticle;
+
+    [Header("공격")]
     public BoxCollider2D meleeAttack;
     public BoxCollider2D dropAttack;
     public CircleCollider2D rollAttack;
@@ -125,11 +140,15 @@ public class Player : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         //최대체력&전체체력
-        maxLife = 100;
-        curLife = 100;
+        maxLife = 150;
+        curLife = 150;
 
         //쿨타임
         maxCoolDown = 0;
+        crouchCoolDown = 0;
+        rollCoolDown = 0;
+        dropCoolDown = 0;
+        summonCoolDown = 0;
 
         //공격력&속도&구르기 속도
         dmg = 15;
@@ -148,10 +167,14 @@ public class Player : MonoBehaviour
         //스킬코어 및 공격타입
         CrouchCore = true;
         skill_Type = Skill_Core.Crouch;
-        equipCount = 1;
+        equipCount = 4;
         isCrouchCore = true;
         equipCrouch = true;
+        equipRoll = true;
+        equipDrop = true;
+        equipSummon = true;
         anim.SetBool("isLieDown", true);
+
     }
     void Update()
     {
@@ -179,7 +202,7 @@ public class Player : MonoBehaviour
         Core_TypeMatch();
 
         LifeCheck();
-        StartCoroutine(LifeCheat());
+        StartCoroutine(heal());
     }
     //플레이어 이동
     void MoveMent()
@@ -194,17 +217,31 @@ public class Player : MonoBehaviour
         rigid.velocity = new Vector2(Move_Axis * speed, rigid.velocity.y);
         if (Move_Axis != 0)
         {
+            soundManager.walkSound.enabled = true;
             if (Move_Axis > 0)
             {
                 spriteRenderer.flipX = false;
+                if (isDash)
+                {
+                    right_DashParticle.SetActive(true);
+                    left_DashParticle.SetActive(false);
+                }
                 meleeAttack.offset = new Vector2(0.6f, 0);
             }
             else if (Move_Axis < 0)
             {
+                if (isDash)
+                {
+                    right_DashParticle.SetActive(false);
+                    left_DashParticle.SetActive(true);
+                }
                 spriteRenderer.flipX = true;
                 meleeAttack.offset = new Vector2(-0.6f, 0);
             }
         }
+        else
+            soundManager.walkSound.enabled = false;
+
     }
     void Stop()
     {
@@ -229,7 +266,7 @@ public class Player : MonoBehaviour
         isAtt = Input.GetKeyDown(KeyCode.A);          //공격
         isJump = Input.GetKeyDown(KeyCode.S);         //점프
         Q_IsSwitch = Input.GetKeyDown(KeyCode.Q);   //공격 타입 슬롯체인지 노멀->파워->정밀->신비
-        isCheat = Input.GetKeyDown(KeyCode.L);      //치트키= 체력 100증가
+        isCheat = Input.GetKeyDown(KeyCode.R);      //치트키= 체력 100증가
 
     }
     void Input_Skill()
@@ -248,11 +285,15 @@ public class Player : MonoBehaviour
     {
         if (rigid.velocity.y == 0)
         {
+            soundManager.jumpSound.enabled = false;
             isGround = true;
             jumping = false;
         }
         if (isJump && jumping)
         {
+            soundManager.jumpSound.enabled = false;
+            soundManager.jumpSound.enabled = true;
+
             anim.SetTrigger("doJump");
             rigid.velocity = new Vector2(rigid.velocity.x, 0f);
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
@@ -260,6 +301,7 @@ public class Player : MonoBehaviour
         }
         if (isJump && isGround)
         {
+            soundManager.jumpSound.enabled = true;
             anim.SetTrigger("doJump");
             rigid.velocity = new Vector2(rigid.velocity.x, 0f);
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
@@ -276,6 +318,7 @@ public class Player : MonoBehaviour
         if (isBoss || !isAtt)
             yield break;
 
+        soundManager.meleeAttackSound.enabled = true;
         meleeAttack.enabled = true;
         anim.SetTrigger("doAttack");
         yield return new WaitForSeconds(0.1f);
@@ -283,6 +326,10 @@ public class Player : MonoBehaviour
         meleeAttack.enabled = false;
         isAtt = false;
         curAttackDelay = 0;
+
+        yield return new WaitForSeconds(0.4f);
+
+        soundManager.meleeAttackSound.enabled = false;
     }
 
     //스킬
@@ -294,16 +341,25 @@ public class Player : MonoBehaviour
                 if (OnSkill)
                 {
                     isHit = true;
+                    isDash = true;
                     Physics2D.IgnoreLayerCollision(6, 7, true);
                     rollAttack.enabled = true;
+                    soundManager.rollAttackSound.enabled = true;
+
+
                     if (!speedUp)
                         StartCoroutine(RollingSpeedUp());
                 }
                 else
                 {
                     isHit = false;
+                    isDash = false;
                     Physics2D.IgnoreLayerCollision(6, 7, false);
+                    right_DashParticle.SetActive(false);
+                    left_DashParticle.SetActive(false);
+
                     rollAttack.enabled = false;
+                    soundManager.rollAttackSound.enabled = false;
                     if (!speedDown)
                         StartCoroutine(RollingSpeedDown());
                 }
@@ -314,6 +370,7 @@ public class Player : MonoBehaviour
                 {
                     isHit = true;
                     isCrouch = true;
+                    soundManager.crouchAttackSound.enabled = true;
                     anim.SetBool("isLieDown", true);
                     crouchParticle.SetActive(true);
                     Physics2D.IgnoreLayerCollision(6, 7, true);
@@ -322,6 +379,7 @@ public class Player : MonoBehaviour
                 {
                     isHit = false;
                     isCrouch = false;
+                    soundManager.crouchAttackSound.enabled = false;
                     anim.SetBool("isLieDown", false);
                     crouchParticle.SetActive(false);
                     Physics2D.IgnoreLayerCollision(6, 7, false);
@@ -332,15 +390,15 @@ public class Player : MonoBehaviour
     }
     IEnumerator RollingSpeedUp()
     {
-        if (speed == roll_Speed*1.5f)
+        if (speed == roll_Speed* 1.75f)
             yield break;
-        if (speed > roll_Speed * 1.5f)
-            speed = roll_Speed * 1.5f;
+        if (speed > roll_Speed * 1.75f)
+            speed = roll_Speed * 1.75f;
 
         speedUp = true;
         yield return new WaitForSeconds(0.15f);
 
-        speed = speed + (roll_Speed * 0.1f);
+        speed = speed + (roll_Speed * 0.15f);
         speedUp = false;
     }
     IEnumerator RollingSpeedDown()
@@ -361,7 +419,7 @@ public class Player : MonoBehaviour
         if(skill_Type!=Skill_Core.Summon)
             yield break;
 
-        if (curLife <= hpDecrease || followCount > maxFollowCount)
+        if (curLife <= hpDecrease || followCount >= maxFollowCount)
         yield break;
 
         if (Input.GetKeyDown(KeyCode.D))
@@ -369,8 +427,12 @@ public class Player : MonoBehaviour
             followCount++;
             gameManager.FollowerSpawn();
             maxLife -= hpDecrease;
+            soundManager.summonAttackSound.enabled = true;
+            yield return new WaitForSeconds(2f);
+
+            soundManager.summonAttackSound.enabled = false;
         }
-        yield return null;
+
     }
     IEnumerator Drop()
     {
@@ -446,9 +508,36 @@ public class Player : MonoBehaviour
     {
         if (Q_IsSwitch)
         {
+            soundManager.weaponChangeSound.enabled = true;
+            coreChangeParticle.SetActive(true);
             int num;
+            //4개 장비중
+            if (equipCount == 4)
+            {
+                switch (skill_Type)
+                {
+                    case Skill_Core.Crouch:
+                        skill_Type = Skill_Core.Roll;
+                        maxCoolDown = rollCoolDown;
+                        break;
+
+                    case Skill_Core.Roll:
+                        skill_Type = Skill_Core.Drop;
+                        maxCoolDown = dropCoolDown;
+                        break;
+                    case Skill_Core.Drop:
+                        skill_Type = Skill_Core.Summon;
+                        maxCoolDown = summonCoolDown;
+                        break;
+
+                    case Skill_Core.Summon:
+                        skill_Type = Skill_Core.Crouch;
+                        maxCoolDown = crouchCoolDown;
+                        break;
+                }
+            }
             //3개 장비중
-            if (equipCount == 3)
+            else if (equipCount == 3)
             {
                 num = Equip_Core_3();
                 switch (num)
@@ -458,17 +547,17 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Crouch:
                                 skill_Type = Skill_Core.Roll;
-                                maxCoolDown = 6;
+                                maxCoolDown = rollCoolDown;
                                 break;
 
                             case Skill_Core.Roll:
                                 skill_Type = Skill_Core.Drop;
-                                maxCoolDown = 3;
+                                maxCoolDown = dropCoolDown;
                                 break;
 
                             case Skill_Core.Drop:
                                 skill_Type = Skill_Core.Crouch;
-                                maxCoolDown = 0;
+                                maxCoolDown = crouchCoolDown;
                                 break;
                         }
                         break;
@@ -477,17 +566,17 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Crouch:
                                 skill_Type = Skill_Core.Roll;
-                                maxCoolDown = 6;
+                                maxCoolDown = rollCoolDown;
                                 break;
 
                             case Skill_Core.Roll:
                                 skill_Type = Skill_Core.Summon;
-                                maxCoolDown = 3;
+                                maxCoolDown = summonCoolDown;
                                 break;
 
                             case Skill_Core.Summon:
                                 skill_Type = Skill_Core.Crouch;
-                                maxCoolDown = 0;
+                                maxCoolDown = crouchCoolDown;
                                 break;
                         }
                         break;
@@ -496,17 +585,17 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Crouch:
                                 skill_Type = Skill_Core.Drop;
-                                maxCoolDown = 6;
+                                maxCoolDown = dropCoolDown;
                                 break;
 
                             case Skill_Core.Drop:
                                 skill_Type = Skill_Core.Summon;
-                                maxCoolDown = 0;
+                                maxCoolDown = summonCoolDown;
                                 break;
 
                             case Skill_Core.Summon:
                                 skill_Type = Skill_Core.Crouch;
-                                maxCoolDown = 0;
+                                maxCoolDown = crouchCoolDown;
                                 break;
                         }
                         break;
@@ -515,22 +604,23 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Roll:
                                 skill_Type = Skill_Core.Drop;
-                                maxCoolDown = 3;
+                                maxCoolDown = dropCoolDown;
                                 break;
 
                             case Skill_Core.Drop:
                                 skill_Type = Skill_Core.Summon;
-                                maxCoolDown = 0;
+                                maxCoolDown = summonCoolDown;
                                 break;
 
                             case Skill_Core.Summon:
                                 skill_Type = Skill_Core.Roll;
-                                maxCoolDown = 0;
+                                maxCoolDown = rollCoolDown;
                                 break;
                         }
                         break;
                 }
             }
+            //2개 장비중
             else if (equipCount == 2)
             {
                 num = Equip_Core_2();
@@ -541,12 +631,12 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Crouch:
                                 skill_Type = Skill_Core.Roll;
-                                maxCoolDown = 6;
+                                maxCoolDown = rollCoolDown;
                                 break;
 
                             case Skill_Core.Roll:
                                 skill_Type = Skill_Core.Crouch;
-                                maxCoolDown = 3;
+                                maxCoolDown = crouchCoolDown;
                                 break;
                         }
                         break;
@@ -555,12 +645,12 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Crouch:
                                 skill_Type = Skill_Core.Drop;
-                                maxCoolDown = 6;
+                                maxCoolDown = dropCoolDown;
                                 break;
 
                             case Skill_Core.Drop:
                                 skill_Type = Skill_Core.Crouch;
-                                maxCoolDown = 3;
+                                maxCoolDown = crouchCoolDown;
                                 break;
                         }
                         break;
@@ -569,12 +659,12 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Crouch:
                                 skill_Type = Skill_Core.Summon;
-                                maxCoolDown = 6;
+                                maxCoolDown = summonCoolDown;
                                 break;
 
                             case Skill_Core.Summon:
                                 skill_Type = Skill_Core.Crouch;
-                                maxCoolDown = 0;
+                                maxCoolDown = crouchCoolDown;
                                 break;
                         }
                         break;
@@ -583,12 +673,12 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Roll:
                                 skill_Type = Skill_Core.Drop;
-                                maxCoolDown = 3;
+                                maxCoolDown = dropCoolDown;
                                 break;
 
                             case Skill_Core.Drop:
                                 skill_Type = Skill_Core.Roll;
-                                maxCoolDown = 0;
+                                maxCoolDown = rollCoolDown;
                                 break;
                         }
                         break;
@@ -597,12 +687,12 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Roll:
                                 skill_Type = Skill_Core.Summon;
-                                maxCoolDown = 3;
+                                maxCoolDown = summonCoolDown;
                                 break;
 
                             case Skill_Core.Summon:
                                 skill_Type = Skill_Core.Roll;
-                                maxCoolDown = 0;
+                                maxCoolDown = rollCoolDown;
                                 break;
                         }
                         break;
@@ -611,12 +701,12 @@ public class Player : MonoBehaviour
                         {
                             case Skill_Core.Drop:
                                 skill_Type = Skill_Core.Summon;
-                                maxCoolDown = 3;
+                                maxCoolDown = summonCoolDown;
                                 break;
 
                             case Skill_Core.Summon:
                                 skill_Type = Skill_Core.Drop;
-                                maxCoolDown = 0;
+                                maxCoolDown = dropCoolDown;
                                 break;
                         }
                         break;
@@ -624,8 +714,10 @@ public class Player : MonoBehaviour
             }
             else if (equipCount == 1)
                 yield break;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1f);
 
+            coreChangeParticle.SetActive(false);
+            soundManager.weaponChangeSound.enabled = false;
             Q_IsSwitch = false;
         }
     }
@@ -734,7 +826,7 @@ public class Player : MonoBehaviour
         return 0;
     }
     //치트     Life+100
-    IEnumerator LifeCheat()
+    IEnumerator heal()
     {
         if (!isCheat)
             yield break;
@@ -742,8 +834,13 @@ public class Player : MonoBehaviour
         yield return null;
         curLife += 100;
         maxLife += 100;
+        healingParticle.SetActive(true);
+        soundManager.healSound.enabled = true;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
+
+        healingParticle.SetActive(false);
+        soundManager.healSound.enabled = false;
         isCheat = false;
     }
 
@@ -752,6 +849,20 @@ public class Player : MonoBehaviour
     {
         if (isHit)
             yield break;
+
+        int ranSound = Random.Range(0, 3);
+        switch(ranSound)
+        {
+            case 0:
+                soundManager.HitSound_1.enabled = true;
+                break;
+            case 1:
+                soundManager.HitSound_2.enabled = true;
+                break;
+            case 2:
+                soundManager.HitSound_3.enabled = true;
+                break;
+        }
 
         isHit = true;
         curLife -= dmg;
@@ -766,6 +877,9 @@ public class Player : MonoBehaviour
         }
         yield return new WaitForSeconds(0.3f);
 
+        soundManager.HitSound_1.enabled = false;
+        soundManager.HitSound_2.enabled = false;
+        soundManager.HitSound_3.enabled = false;
         isHit = false;
         ReturnSprite(1f);
     }
@@ -828,15 +942,15 @@ public class Player : MonoBehaviour
                             break;
                         case Item.CoreType.Roll:
                             RollCore = true;
-
+                            equipRoll = true;
                             break;
                         case Item.CoreType.Summon:
                             SummonCore = true;
-
+                            equipSummon = true;
                             break;
                         case Item.CoreType.Drop:
                             DropCore = true;
-
+                            equipDrop = true;
                             break; 
                     }
                     break;

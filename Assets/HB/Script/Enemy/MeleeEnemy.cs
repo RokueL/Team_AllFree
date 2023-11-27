@@ -19,6 +19,8 @@ public class MeleeEnemy : Enemy
         forward = new Vector2(speed, rigid.velocity.y).normalized;
         maxAggroTime = 4;
         maxAttackDelay = 4;
+        maxdistance = 8;
+        mindistance = 2;
     }
     //체력설정
 
@@ -211,6 +213,12 @@ public class MeleeEnemy : Enemy
 
         isHit = true;
 
+        Vector2 pos = new Vector2(player.transform.position.x - transform.position.x, 0);
+        //X좌표 넉백
+        if (player.gameObject.transform.position.x - transform.position.x < 0)
+            rigid.AddForce(-pos * 4, ForceMode2D.Impulse);
+        else if (player.gameObject.transform.position.x - transform.position.x > 0)
+            rigid.AddForce(-pos * 4, ForceMode2D.Impulse);
         DamageLogic(dmg);
         ReturnSprite(0.4f);
 
@@ -237,12 +245,7 @@ public class MeleeEnemy : Enemy
         {
             if (isDashState)
             {
-                rigid.velocity = Vector2.zero;
-                //튕겨 날아가기
-                if (collision.gameObject.transform.position.x - transform.position.x < 0)
-                    rigid.AddForce(-forward * 5 + Vector2.up * 4, ForceMode2D.Impulse);
-                else if (collision.gameObject.transform.position.x - transform.position.x > 0)
-                    rigid.AddForce(-forward * 5 + Vector2.up * 4, ForceMode2D.Impulse);
+                StartCoroutine(OnHit(0));
             }
         }
         //벽에 부딪혔을때
@@ -251,15 +254,6 @@ public class MeleeEnemy : Enemy
             if (isDashState)                                 //대쉬공격 시
             {
                 StartCoroutine(OnHit(0));
-                {
-                    rigid.velocity = Vector2.zero;
-                    //튕겨 날아가기
-
-                    if (collision.gameObject.transform.position.x - transform.position.x < 0)
-                        rigid.AddForce(-forward * 6 + Vector2.up * 4, ForceMode2D.Impulse);
-                    else if (collision.gameObject.transform.position.x - transform.position.x > 0)
-                        rigid.AddForce(-forward * 6 + Vector2.up * 4, ForceMode2D.Impulse);
-                }
             }
             else
                 rigid.velocity = Vector2.zero;
@@ -267,18 +261,24 @@ public class MeleeEnemy : Enemy
     }
     void OnTriggerEnter2D(Collider2D collision)
     {
+        int ranHit = Random.Range(0, 3);
         //플레이어의 무기에 공격당했을 때 
         if (collision.gameObject.tag == "PlayerAttack")
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg));
-
-            Vector2 pos = new Vector2(player.transform.position.x - transform.position.x,0);
-            //X좌표 넉백
-            if (collision.gameObject.transform.position.x - transform.position.x < 0)
-                rigid.AddForce(-pos * 4, ForceMode2D.Impulse);
-            else if (collision.gameObject.transform.position.x - transform.position.x > 0)
-                rigid.AddForce(-pos * 4 , ForceMode2D.Impulse);
+            switch (ranHit)
+            {
+                case 0:
+                    gameManager.Hit_Effect1(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 1:
+                    gameManager.Hit_Effect2(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 2:
+                    gameManager.Hit_Effect3(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+            }
         }
     }
 }

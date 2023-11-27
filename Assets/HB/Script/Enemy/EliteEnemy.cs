@@ -298,7 +298,6 @@ public class EliteEnemy : Enemy
 
             isHit = false;
             //Item
-            Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
             int num = 3;
             if (StateCore||SkillCore)
                 num = 2;
@@ -338,8 +337,21 @@ public class EliteEnemy : Enemy
                     itemType = "stateCore";
                     break;
             }
-            if (deathHitCount <= 4)
+            if (deathHitCount <= 4&&itemType=="gold")
             {
+                for (int index = 0; index < 10; index++)
+                {
+                    Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
+                    GameObject Item = objectManager.MakeObj(itemType);
+                    Item.transform.position = transform.position;
+
+                    Rigidbody2D Item_Rigid = Item.GetComponent<Rigidbody2D>();
+                    Item_Rigid.AddForce(ranVec * 2 + Vector2.up * 8, ForceMode2D.Impulse);
+                }
+            }
+            if (deathHitCount <= 4 && itemType != "gold")
+            {
+                Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
                 GameObject Item = objectManager.MakeObj(itemType);
                 Item.transform.position = transform.position;
 
@@ -367,16 +379,41 @@ public class EliteEnemy : Enemy
     }
     void OnTriggerEnter2D(Collider2D collision)
     {
+        int ranHit = Random.Range(0, 3);
         //플레이어의 무기에 공격당했을 때 
         if (collision.gameObject.tag == "PlayerAttack")
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg));
+            switch (ranHit)
+            {
+                case 0:
+                    gameManager.Hit_Effect1(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 1:
+                    gameManager.Hit_Effect2(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 2:
+                    gameManager.Hit_Effect3(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+            }
         }
         if (collision.gameObject.tag == "Follow")
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg * 0.3f));
+            switch(ranHit)
+            {
+                case 0:
+                    gameManager.Hit_Effect1(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 1:
+                    gameManager.Hit_Effect2(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 2:
+                    gameManager.Hit_Effect3(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+            }
 
         }
     }

@@ -8,6 +8,9 @@ public class ObjectManager : MonoBehaviour
     public GameObject ground_EffectPrb;
     public GameObject spawn_EffectPrb;
     public GameObject roar_EffectPrb;
+    public GameObject hit_Effect1Prb;
+    public GameObject hit_Effect2Prb;
+    public GameObject hit_Effect3Prb;
 
     [Header("팔로우캣&텔레포트 파티클")]
     public GameObject followCatPrb;
@@ -33,8 +36,6 @@ public class ObjectManager : MonoBehaviour
 
     [Header("아이템")]
     public GameObject goldPrb;
-    public GameObject silverPrb;
-    public GameObject bronzePrb;
     public GameObject itemBoxPrb;
 
 
@@ -48,6 +49,9 @@ public class ObjectManager : MonoBehaviour
     GameObject[] ground_Effect;
     GameObject[] spawn_Effect;
     GameObject[] roar_Effect;
+    GameObject[] hit_Effect1;
+    GameObject[] hit_Effect2;
+    GameObject[] hit_Effect3;
 
     GameObject[] followCat;
     GameObject[] teleport;
@@ -72,8 +76,6 @@ public class ObjectManager : MonoBehaviour
 
     //Item
     GameObject[] gold;
-    GameObject[] silver;
-    GameObject[] bronze;
 
     GameObject[] rollCore;
     GameObject[] summonCore;
@@ -83,15 +85,17 @@ public class ObjectManager : MonoBehaviour
 
     GameObject[] itemBox;
 
-
-
     GameObject[] targetPool;
 
     void Awake()
     {
-        ground_Effect = new GameObject[25];
+        ground_Effect = new GameObject[15];
         spawn_Effect = new GameObject[5];
         roar_Effect = new GameObject[5];
+
+        hit_Effect1 = new GameObject[5];
+        hit_Effect2 = new GameObject[5];
+        hit_Effect3 = new GameObject[5];
 
         followCat = new GameObject[10];
         teleport = new GameObject[10];
@@ -99,29 +103,27 @@ public class ObjectManager : MonoBehaviour
         snakeAttack = new GameObject[15];
         flowerAttack = new GameObject[30];
 
-        bossAAttack_1 = new GameObject[100];
+        bossAAttack_1 = new GameObject[60];
 
         debrisA = new GameObject[20];
         debrisB= new GameObject[20];
         debrisC = new GameObject[20];
 
         bossA = new GameObject[2];
-        elite = new GameObject[10];
+        elite = new GameObject[2];
 
         mouse = new GameObject[10];
         snake = new GameObject[10];
 
         gold = new GameObject[30];
-        silver = new GameObject[30];
-        bronze = new GameObject[30];
 
-        rollCore = new GameObject[1];
-        summonCore = new GameObject[1];
-        dropCore = new GameObject[1];
+        rollCore = new GameObject[2];
+        summonCore = new GameObject[2];
+        dropCore = new GameObject[2];
 
         stateCore = new GameObject[5];
 
-        itemBox = new GameObject[15];
+        itemBox = new GameObject[3];
 
         Generate();
     }
@@ -141,6 +143,21 @@ public class ObjectManager : MonoBehaviour
         {
             roar_Effect[index] = Instantiate(roar_EffectPrb);
             roar_Effect[index].SetActive(false);
+        }  
+        for (int index = 0; index < hit_Effect1.Length; index++)
+        {
+            hit_Effect1[index] = Instantiate(hit_Effect1Prb);
+            hit_Effect1[index].SetActive(false);
+        } 
+        for (int index = 0; index < hit_Effect2.Length; index++)
+        {
+            hit_Effect2[index] = Instantiate(hit_Effect2Prb);
+            hit_Effect2[index].SetActive(false);
+        } 
+        for (int index = 0; index < hit_Effect3.Length; index++)
+        {
+            hit_Effect3[index] = Instantiate(hit_Effect3Prb);
+            hit_Effect3[index].SetActive(false);
         } 
 
         for (int index = 0; index < followCat.Length; index++)
@@ -214,16 +231,6 @@ public class ObjectManager : MonoBehaviour
             gold[index] = Instantiate(goldPrb);
             gold[index].SetActive(false);
         }
-        for (int index = 0; index < silver.Length; index++)
-        {
-            silver[index] = Instantiate(silverPrb);
-            silver[index].SetActive(false);
-        }
-        for (int index = 0; index < bronze.Length; index++)
-        {
-            bronze[index] = Instantiate(bronzePrb);
-            bronze[index].SetActive(false);
-        }
 
         for (int index = 0; index < rollCore.Length; index++)
         {
@@ -265,6 +272,15 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "roar_Effect":
                 targetPool = roar_Effect;
+                break;  
+            case "hit_Effect1":
+                targetPool = hit_Effect1;
+                break;    
+            case "hit_Effect2":
+                targetPool = hit_Effect2;
+                break;   
+            case "hit_Effect3":
+                targetPool = hit_Effect3;
                 break;  
 
             case "followCat":
@@ -311,12 +327,6 @@ public class ObjectManager : MonoBehaviour
 
             case "gold":
                 targetPool = gold;
-                break;
-            case "silver":
-                targetPool = silver;
-                break;
-            case "bronze":
-                targetPool = bronze;
                 break;
 
             case "rollCore":

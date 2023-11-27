@@ -36,22 +36,43 @@ public class Boss : Enemy
     bool isRolling_1;
     bool isRolling_2;
 
-    int scaleCount;
+    float scaleCount;
     bool isScalesFire;
 
     bool isStart;
     bool isAppear;
     public bool rageState;
 
+    [Header("공격")]
     public CircleCollider2D Rolling;
     public BoxCollider2D EarthQuake;
     public BoxCollider2D Roar;
+
+    [Header("사운드")]
+    public AudioSource hitSound;
+    public AudioSource dieSound;
+    public AudioSource rollSound;
+    public AudioSource roarSound;
+    public AudioSource earthQuakeSound;
+
     public Enemy enemyScript;
     public GameObject Trigger;
     public GameObject roarReadyParticle;
     
     void Awake()
     {
+        hitSound.volume = 0.5f;
+        dieSound.volume = 0.5f;
+        rollSound.volume = 0.5f;
+        roarSound.volume = 0.5f;
+        earthQuakeSound.volume = 0.5f;
+
+        hitSound.enabled = false;
+        dieSound.enabled = false;
+        rollSound.enabled = false;
+        roarSound.enabled = false;
+        earthQuakeSound.enabled = false;
+        
         PatternDelay = 1.45f;
 
         normalScatchRatio = 7;
@@ -74,9 +95,6 @@ public class Boss : Enemy
     }
     void FixedUpdate()
     {
-        if (Trigger.activeSelf == false&&!isAppear)
-            StartCoroutine(Appear());
-
         if (!isDie)
         {
             dist = Vector2.Distance(player.transform.position, transform.position);
@@ -103,8 +121,14 @@ public class Boss : Enemy
         }
         else
         {
+            StopCoroutine(RollAttack());
+            StopCoroutine(RoarAttack());
+            StopCoroutine(JumpAttack());
             DieSprite();
         }
+
+        if (Trigger.activeSelf == false&&!isAppear)
+            StartCoroutine(Appear());
     }
 
     //Start Setting
@@ -148,7 +172,7 @@ public class Boss : Enemy
                 maxHealth = 300;
                 dmg = 15;
                 rageGage = 70;
-                scaleCount = 5;
+                scaleCount = 9;
                 break;
 
             case Level.Normal:
@@ -160,7 +184,7 @@ public class Boss : Enemy
                 maxHealth = 700;
                 dmg = 20;
                 rageGage = 70;
-                scaleCount = 9;
+                scaleCount = 13;
                 break;
 
         }
@@ -262,6 +286,7 @@ public class Boss : Enemy
         dmg = rollDmg * 1.2f;
         isRolling = true;
         isAttack = true;
+        rollSound.enabled = true;
         anim.SetTrigger("StartRoll");
         rigid.AddForce(Vector2.right * frontPos * -doReadyRoll + Vector2.up * doReadyRoll, ForceMode2D.Impulse);
 
@@ -279,6 +304,7 @@ public class Boss : Enemy
         yield return new WaitForSeconds(PatternDelay);
 
         anim.SetTrigger("EndRoll");
+        rollSound.enabled = false;
         dmg = rollDmg;
         Stun();
         Rolling.enabled = false;
@@ -291,9 +317,13 @@ public class Boss : Enemy
     IEnumerator RoarAttack()
     {
         isAttack = true;
-        anim.SetBool("isWalk", false);
         roarReadyParticle.SetActive(true);
-        yield return new WaitForSeconds(PatternDelay);
+        anim.SetBool("isWalk", false);
+        roarSound.enabled = true;
+        yield return new WaitForSeconds(0.5f);
+
+        roarSound.volume = 1f;
+        yield return new WaitForSeconds(patternIndex);
 
         roarReadyParticle.SetActive(false);
         anim.SetTrigger("Roar");
@@ -304,6 +334,8 @@ public class Boss : Enemy
 
         Roar.enabled = false;
         yield return new WaitForSeconds(PatternDelay);
+
+        roarSound.enabled = false;
 
         StartCoroutine(Think());
     }
@@ -321,7 +353,7 @@ public class Boss : Enemy
         rigid.AddForce(Vector2.up * 30, ForceMode2D.Impulse);
         yield return new WaitForSeconds(1f);
 
-
+        earthQuakeSound.enabled = true;
         anim.SetTrigger("doLand");
         gameManager.DropDebris();
         gameManager.ShakeCam(1f,1f);
@@ -330,6 +362,10 @@ public class Boss : Enemy
 
         EarthQuake.enabled = false;
         dmg = curdmg;
+
+        yield return new WaitForSeconds(0.4f);
+
+        earthQuakeSound.enabled = false;
         StartCoroutine(Think());
     }
 
@@ -356,7 +392,7 @@ public class Boss : Enemy
                 Vector2 dirVec = new Vector2(Mathf.Cos(Mathf.PI * index / (scaleCount-1)),
                     Mathf.Sin(Mathf.PI * index / (scaleCount - 1)));
 
-                S_rigid.transform.Rotate(Vector3.forward * index * 45);
+                S_rigid.transform.Rotate(Vector3.forward *180 * (index/((scaleCount-1))));
                 S_rigid.AddForce(dirVec * 12, ForceMode2D.Impulse);
             }
         }
@@ -396,7 +432,8 @@ public class Boss : Enemy
         if (health > 0)
         {
             isHit = true;
-            if(!rageState)
+            hitSound.enabled = true;
+            if (!rageState)
                 DamageLogic(dmg);
             else if(rageState)
                 DamageLogic(dmg*2);
@@ -407,7 +444,9 @@ public class Boss : Enemy
             {
                 anim.SetTrigger("doHit");
             }
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.3f);
+
+            hitSound.enabled = false;
             isHit = false;
             ReturnSprite(1f);
         }
@@ -417,6 +456,7 @@ public class Boss : Enemy
             if (!isDie)
             {
                 anim.SetTrigger("doDie");
+                dieSound.enabled = true;
                 isDie = true;
                 yield return new WaitForSeconds(2.2f);
             }
@@ -428,7 +468,6 @@ public class Boss : Enemy
 
             isHit = false;
             //Item
-            Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
             int num = 3;
             if (StateCore || SkillCore)
                 num = 2;
@@ -468,22 +507,28 @@ public class Boss : Enemy
                     itemType = "stateCore";
                     break;
             }
-            if (deathHitCount <= 4)
+            if (deathHitCount <= 4 && itemType == "gold")
             {
+                for (int index = 0; index < 10; index++)
+                {
+                    int ranPower = Random.Range(6, 10);
+                    Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
+                    GameObject Item = objectManager.MakeObj(itemType);
+                    Item.transform.position = transform.position;
+
+                    Rigidbody2D Item_Rigid = Item.GetComponent<Rigidbody2D>();
+                    Item_Rigid.AddForce(ranVec * 2 + Vector2.up * ranPower, ForceMode2D.Impulse);
+                }
+            }
+            if (deathHitCount <= 4 && itemType != "gold")
+            {
+                Vector2 ranVec = new Vector2(Random.Range(-1f, 1f), 0);
                 GameObject Item = objectManager.MakeObj(itemType);
                 Item.transform.position = transform.position;
 
                 Rigidbody2D Item_Rigid = Item.GetComponent<Rigidbody2D>();
                 Item_Rigid.AddForce(ranVec * 2 + Vector2.up * 8, ForceMode2D.Impulse);
             }
-            if (deathHitCount == 4)
-            {
-                gameObject.SetActive(false);
-
-                yield break;
-            }
-            else
-                yield break;
         }
     }
     void ReturnSprite(float Alpha)
@@ -523,18 +568,42 @@ public class Boss : Enemy
     }
     void OnTriggerEnter2D(Collider2D collision)
     {
+        int ranHit = Random.Range(0, 3);
         //플레이어의 무기에 공격당했을 때 
         if (collision.gameObject.tag == "PlayerAttack")
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg));
-
+            switch(ranHit)
+            {
+                case 0:
+                    gameManager.Hit_Effect1(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 1:
+                    gameManager.Hit_Effect2(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 2:
+                    gameManager.Hit_Effect3(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+            }
         }
         if (collision.gameObject.tag == "Follow")
         {
             Player playerLogic = player.GetComponent<Player>();
             StartCoroutine(OnHit(playerLogic.dmg*0.3f));
-
+            gameManager.Hit_Effect1(collision.bounds.ClosestPoint(transform.position), 0.5f);
+            switch (ranHit)
+            {
+                case 0:
+                    gameManager.Hit_Effect1(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 1:
+                    gameManager.Hit_Effect2(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+                case 2:
+                    gameManager.Hit_Effect3(collision.bounds.ClosestPoint(transform.position), 0.5f);
+                    break;
+            }
         }
     }
 }

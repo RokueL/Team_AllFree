@@ -299,6 +299,30 @@ public class GameManager : MonoBehaviour
         roar_Effect.transform.position = target;
         roar_EffectLogic.Play();
     }
+    public void Hit_Effect1(Vector3 target, float time)
+    {
+        GameObject hit_Effect = objectManager.MakeObj("hit_Effect1");
+        ParticleSystem hit_EffectLogic = hit_Effect.GetComponent<ParticleSystem>();
+        hit_Effect.GetComponent<Effect>().time = time;
+        hit_Effect.transform.position = target;
+        hit_EffectLogic.Play();
+    }
+    public void Hit_Effect2(Vector3 target, float time)
+    {
+        GameObject hit_Effect = objectManager.MakeObj("hit_Effect2");
+        ParticleSystem hit_EffectLogic = hit_Effect.GetComponent<ParticleSystem>();
+        hit_Effect.GetComponent<Effect>().time = time;
+        hit_Effect.transform.position = target;
+        hit_EffectLogic.Play();
+    }
+    public void Hit_Effect3(Vector3 target, float time)
+    {
+        GameObject hit_Effect = objectManager.MakeObj("hit_Effect3");
+        ParticleSystem hit_EffectLogic = hit_Effect.GetComponent<ParticleSystem>();
+        hit_Effect.GetComponent<Effect>().time = time;
+        hit_Effect.transform.position = target;
+        hit_EffectLogic.Play();
+    }
 
     //몬스터 및 아이템박스 보스 스폰
     public void CreateBoss()

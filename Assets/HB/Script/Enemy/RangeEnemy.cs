@@ -22,6 +22,8 @@ public class RangeEnemy : Enemy
         forward = new Vector2(speed, rigid.velocity.y).normalized;
         isAggro = false;
         maxAttackDelay = 3;
+        maxdistance = 8;
+        mindistance = 2;
 
     }
     void OnEnable()
